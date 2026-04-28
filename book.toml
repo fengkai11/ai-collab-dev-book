@@ -1,0 +1,11 @@
+[book]
+authors = ["fengkai1"]
+language = "zh-CN"
+multilingual = false
+src = "src"
+title = "AI 协同开发：切片式开发训练手册"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-icon = "fa-github"
