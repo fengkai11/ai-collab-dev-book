@@ -2,6 +2,10 @@
 
 这是基于 `mdBook` 的在线图书项目，正文来自 `ai_collab_slice_book_chapters_v0.3_full_draft_balanced`。
 
+## 在线阅读
+
+https://fengkai11.github.io/ai-collab-dev-book/
+
 ## 本地预览
 
 ```bash
