@@ -1,0 +1,605 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 10 章：如何建立自己的 AI 协同开发工作流 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-10-章如何建立自己的-ai-协同开发工作流"><a class="header" href="#第-10-章如何建立自己的-ai-协同开发工作流">第 10 章：如何建立自己的 AI 协同开发工作流</a></h1>
+<blockquote>
+<p>版本：v0.1 全章初稿<br />
+本章定位：基础训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要把产品合同、页面预览、切片、施工、验收、返工、复盘整合成自己的长期 SOP。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>个人开发 SOP：固定项目推进步骤。</li>
+<li>文件结构：保存每轮过程材料。</li>
+<li>提示词资产：沉淀有效提示词。</li>
+<li>模板资产：复用合同、施工、验收、返工模板。</li>
+<li>项目日志：记录每轮决策和问题。</li>
+<li>复盘：减少下一轮偏航。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>新手不需要一开始懂全部软件工程，但需要稳定流程。</li>
+<li>每个项目都应从产品合同开始。</li>
+<li>每个切片都应有施工单、验收清单、返工记录。</li>
+<li>GPT 应该降低判断成本，不是制造更多材料。</li>
+<li>真正进步来自每轮复盘。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>主案例沉淀出完整流程：产品合同、页面预览、第一切片定义、施工任务单、验收清单、验收记录、返工单、复盘、下一切片计划。下一切片可做高风险审批闭环。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">我这次熟悉了，下一次直接让 AI 做完整系统。
+</code></pre>
+<p>这会重新回到大而全失控。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">每个项目都按：想法记录 → 产品合同 → 候选闭环 → 第一切片 → 页面预览 → 施工单 → 验收 → 返工 → 复盘 → 下一切片。
+</code></pre>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-建立项目文件夹"><a class="header" href="#1-建立项目文件夹">1. 建立项目文件夹</a></h3>
+<p>把合同、预览、切片、施工、验收、返工、复盘分文件保存。</p>
+<h3 id="2-沉淀提示词库"><a class="header" href="#2-沉淀提示词库">2. 沉淀提示词库</a></h3>
+<p>有效提示词保存，无效提示词复盘修改。</p>
+<h3 id="3-每个切片一个循环"><a class="header" href="#3-每个切片一个循环">3. 每个切片一个循环</a></h3>
+<p>不要多个切片同时施工。</p>
+<h3 id="4-复盘失控点"><a class="header" href="#4-复盘失控点">4. 复盘失控点</a></h3>
+<p>记录需求偏航、实现偏航、最早可发现检查点。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请基于下面开发记录做复盘：哪些地方需求偏航，哪些地方实现偏航，哪些提示词有效，验收是否充分，下一切片如何改进。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="个人-ai-协同开发-sop-模板"><a class="header" href="#个人-ai-协同开发-sop-模板">个人 AI 协同开发 SOP 模板</a></h3>
+<p>用于写自己的流程。</p>
+<pre><code class="language-text">我的项目类型：
+常用工具：
+标准流程：
+1.
+2.
+3.
+我坚持不做的事：
+每轮必须留下的文件：
+验收习惯：
+复盘习惯：
+</code></pre>
+<h3 id="项目复盘模板"><a class="header" href="#项目复盘模板">项目复盘模板</a></h3>
+<p>用于每个切片后总结。</p>
+<pre><code class="language-text">项目/切片：
+本轮目标：
+实际完成：
+未完成：
+需求偏航：
+实现偏航：
+有效提示词：
+无效提示词：
+下一轮改进：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1设计自己的项目文件夹结构"><a class="header" href="#练习-1设计自己的项目文件夹结构">练习 1：设计自己的项目文件夹结构。</a></h3>
+<h3 id="练习-2写自己的-812-步-ai-协同开发-sop"><a class="header" href="#练习-2写自己的-812-步-ai-协同开发-sop">练习 2：写自己的 8–12 步 AI 协同开发 SOP。</a></h3>
+<h3 id="练习-3制定-30-天训练计划"><a class="header" href="#练习-3制定-30-天训练计划">练习 3：制定 30 天训练计划。</a></h3>
+<h3 id="练习-4复盘一次真实项目"><a class="header" href="#练习-4复盘一次真实项目">练习 4：复盘一次真实项目。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>结构示例：docs/00-idea.md、01-contract.md、02-preview.md、slice-001/definition.md、construction.md、acceptance.md、rework.md。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>示范 SOP：写想法、找闭环、选切片、写合同、预览、施工、验收、返工、复盘。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>可按附录 C 执行。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>复盘重点：哪里没写不做项、哪里验收太晚、哪里提示词发散。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+我有固定 SOP。</li>
+<li><input disabled="" type="checkbox"/>
+每个项目先写产品合同。</li>
+<li><input disabled="" type="checkbox"/>
+每个切片有施工单。</li>
+<li><input disabled="" type="checkbox"/>
+每个切片有验收清单。</li>
+<li><input disabled="" type="checkbox"/>
+返工有返工单。</li>
+<li><input disabled="" type="checkbox"/>
+保存有效提示词。</li>
+<li><input disabled="" type="checkbox"/>
+每轮做复盘。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区学完又回到大而全"><a class="header" href="#误区学完又回到大而全">误区：学完又回到大而全</a></h3>
+<p>流程的价值在于反复执行。</p>
+<h3 id="误区只保存代码"><a class="header" href="#误区只保存代码">误区：只保存代码</a></h3>
+<p>过程文件能让你避免重复踩坑。</p>
+<h3 id="误区sop-写太复杂"><a class="header" href="#误区sop-写太复杂">误区：SOP 写太复杂</a></h3>
+<p>能执行的简单 SOP 比复杂文档更重要。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>AI 协同开发的长期能力来自稳定工作流。工具会变，但产品合同、切片、施工、验收、返工和复盘这条链路可以长期复用。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>正文结束。附录提供模板包、提示词包、30 天训练计划和术语解释。</p>
+<h2 id="个人工作流的最低可行版本"><a class="header" href="#个人工作流的最低可行版本">个人工作流的最低可行版本</a></h2>
+<p>如果你觉得完整 SOP 太复杂，至少保留下面 6 个文件：</p>
+<pre><code class="language-text">01-product-contract.md
+02-page-preview.md
+03-first-slice.md
+04-construction-order.md
+05-acceptance-checklist.md
+06-rework-order.md
+</code></pre>
+<p>这 6 个文件就能覆盖从想法到返工的主流程。后续再补复盘、提示词库、模板库。</p>
+<h2 id="每个项目开始前的-15-分钟"><a class="header" href="#每个项目开始前的-15-分钟">每个项目开始前的 15 分钟</a></h2>
+<p>不要一上来打开 coding agent。先花 15 分钟做三件事：</p>
+<ol>
+<li>写 100 字想法；</li>
+<li>写本版不做项；</li>
+<li>写第一候选闭环。</li>
+</ol>
+<p>这 15 分钟通常能节省后面数小时返工。</p>
+<h2 id="每次给-coding-agent-施工前的-5-分钟"><a class="header" href="#每次给-coding-agent-施工前的-5-分钟">每次给 coding agent 施工前的 5 分钟</a></h2>
+<p>检查施工单：</p>
+<pre><code class="language-text">[ ] 是否只做一个切片？
+[ ] 是否有明确不做项？
+[ ] 是否有验收标准？
+[ ] 是否要求变更文件清单？
+[ ] 是否禁止无关改动？
+</code></pre>
+<p>如果有两项没满足，不要施工。</p>
+<h2 id="每次验收后的-10-分钟"><a class="header" href="#每次验收后的-10-分钟">每次验收后的 10 分钟</a></h2>
+<p>不要急着继续下一轮。先把失败项记录下来：</p>
+<pre><code class="language-text">失败项：
+复现步骤：
+当前结果：
+期望结果：
+问题类型：
+下一步：
+</code></pre>
+<p>这 10 分钟决定返工质量。</p>
+<h2 id="建议的项目目录"><a class="header" href="#建议的项目目录">建议的项目目录</a></h2>
+<pre><code class="language-text">docs/
+  00-idea/
+    product-idea.md
+    expansion-risk.md
+  01-contract/
+    product-contract-v1.md
+    product-contract-review.md
+    product-contract-v2.md
+  02-preview/
+    page-preview-v1.md
+    page-preview-review.md
+  03-slices/
+    slice-001-definition.md
+    slice-002-plan.md
+  04-construction/
+    slice-001-construction-order.md
+  05-acceptance/
+    slice-001-acceptance-checklist.md
+    slice-001-acceptance-record.md
+  06-rework/
+    slice-001-rework-order.md
+    slice-001-recheck.md
+  07-review/
+    slice-001-review.md
+  prompts/
+  templates/
+</code></pre>
+<h2 id="如何判断自己真正进步了"><a class="header" href="#如何判断自己真正进步了">如何判断自己真正进步了</a></h2>
+<p>不是看你写了多少提示词，也不是看 AI 生成了多少代码，而是看：</p>
+<ul>
+<li>你是否越来越少让 AI 生成完整系统；</li>
+<li>你是否能更快识别第一切片；</li>
+<li>你是否能更具体地写不做项；</li>
+<li>你是否能在施工前写验收；</li>
+<li>你是否能把问题写成返工单；</li>
+<li>你是否越来越少说“感觉不对”。</li>
+</ul>
+<h2 id="下一切片启动模板"><a class="header" href="#下一切片启动模板">下一切片启动模板</a></h2>
+<pre><code class="language-text">上一切片结果：
+通过的验收项：
+未通过但已处理：
+遗留问题：
+下一候选切片：
+为什么现在做它：
+起点：
+终点：
+本切片做：
+本切片不做：
+需要预览的页面：
+预计验收项：
+</code></pre>
+<p>这能防止你在第一切片后突然跳回完整系统。</p>
+<hr />
+<h1 id="v03-扩写把方法固化成自己的开发系统"><a class="header" href="#v03-扩写把方法固化成自己的开发系统">v0.3 扩写：把方法固化成自己的开发系统</a></h1>
+<p>前面章节解决的是单个切片怎么做。第 10 章要解决的是：如何把这一套方法变成你以后每个项目都能复用的工作流。</p>
+<p>如果没有工作流，你会在每个新项目里重新陷入同样的问题：一开始想得很大；GPT 输出很多文档；coding agent 改很多文件；页面看起来有了，但不顺；返工时不知道怎么说；下个项目又重复一次。</p>
+<p>真正的进步不是某一次项目做成，而是你形成一套可复制的节奏。</p>
+<h2 id="101-个人-ai-协同开发-sop"><a class="header" href="#101-个人-ai-协同开发-sop">10.1 个人 AI 协同开发 SOP</a></h2>
+<p>下面是一套适合新手的 12 步 SOP。</p>
+<h3 id="第-1-步写产品想法记录卡"><a class="header" href="#第-1-步写产品想法记录卡">第 1 步：写产品想法记录卡</a></h3>
+<p>只用 100–200 字写清楚：我想做什么、给谁用、解决什么问题、为什么现在想做。不要一开始写完整方案。</p>
+<h3 id="第-2-步让-gpt-压缩最小闭环"><a class="header" href="#第-2-步让-gpt-压缩最小闭环">第 2 步：让 GPT 压缩最小闭环</a></h3>
+<pre><code class="language-text">请不要展开完整系统。请基于下面的想法，列出 3 个最小可验证闭环。
+每个闭环必须包含：用户起点动作、系统反馈、终点结果、可验收价值。
+</code></pre>
+<h3 id="第-3-步选择第一切片"><a class="header" href="#第-3-步选择第一切片">第 3 步：选择第一切片</a></h3>
+<p>用四个维度打分：用户可见价值、实现复杂度、验收难度、后续承接价值。优先选择高价值、低复杂、易验收、能承接后续的切片。</p>
+<h3 id="第-4-步写一页纸产品合同"><a class="header" href="#第-4-步写一页纸产品合同">第 4 步：写一页纸产品合同</a></h3>
+<p>把第一切片写成产品合同。重点不是完整，而是本版闭环、成功标准、本版不做、待确认项。</p>
+<h3 id="第-5-步让-gpt-审查产品合同"><a class="header" href="#第-5-步让-gpt-审查产品合同">第 5 步：让 GPT 审查产品合同</a></h3>
+<p>不要让 GPT 扩展功能，而是让它审查模糊点和越界风险。</p>
+<h3 id="第-6-步生成页面预览"><a class="header" href="#第-6-步生成页面预览">第 6 步：生成页面预览</a></h3>
+<p>只生成页面预览，不写后端、数据库、接口。</p>
+<h3 id="第-7-步审查页面预览"><a class="header" href="#第-7-步审查页面预览">第 7 步：审查页面预览</a></h3>
+<p>用页面预览审查表检查：路径是否完整、状态是否覆盖、是否越界、是否能转施工。</p>
+<h3 id="第-8-步写施工任务单"><a class="header" href="#第-8-步写施工任务单">第 8 步：写施工任务单</a></h3>
+<p>施工单必须包含目标、输入材料、输出交付、本次做什么、本次不做什么、验收标准、变更文件清单要求。</p>
+<h3 id="第-9-步交给-coding-agent"><a class="header" href="#第-9-步交给-coding-agent">第 9 步：交给 coding agent</a></h3>
+<p>给 Claude Code / Codex 的指令要明确：</p>
+<pre><code class="language-text">只实现本施工单范围。遇到不确定项先记录，不要自行扩展。完成后列出变更文件、运行方式、已知问题和验收对照。
+</code></pre>
+<h3 id="第-10-步按验收清单测试"><a class="header" href="#第-10-步按验收清单测试">第 10 步：按验收清单测试</a></h3>
+<p>不要凭感觉。逐条记录：通过 / 未通过 / 不确定。</p>
+<h3 id="第-11-步写返工单"><a class="header" href="#第-11-步写返工单">第 11 步：写返工单</a></h3>
+<p>返工单只针对未通过项，不要重新做整个切片。</p>
+<h3 id="第-12-步复盘并规划下一切片"><a class="header" href="#第-12-步复盘并规划下一切片">第 12 步：复盘并规划下一切片</a></h3>
+<p>复盘四件事：哪些地方偏航了、哪些提示词有效、哪些验收项漏了、下一切片是什么。</p>
+<h2 id="102-推荐文件夹结构"><a class="header" href="#102-推荐文件夹结构">10.2 推荐文件夹结构</a></h2>
+<pre><code class="language-text">project-name/
+  00_项目总览/
+    产品想法记录卡.md
+    项目目标与边界.md
+    术语表.md
+
+  01_产品合同/
+    01_一页纸产品合同_v1.md
+    02_GPT审查记录.md
+    03_一页纸产品合同_v2.md
+
+  02_切片规划/
+    01_候选闭环清单.md
+    02_第一切片定义.md
+    03_下一切片计划.md
+
+  03_页面预览/
+    01_页面预览需求.md
+    02_GPT页面方案.md
+    03_页面预览审查记录.md
+
+  04_施工单/
+    slice-001_施工任务单.md
+    slice-002_施工任务单.md
+
+  05_验收/
+    slice-001_验收清单.md
+    slice-001_验收记录.md
+
+  06_返工/
+    slice-001_返工单_001.md
+    slice-001_复验记录_001.md
+
+  07_复盘/
+    slice-001_复盘.md
+    项目阶段复盘.md
+
+  08_提示词资产/
+    产品合同提示词.md
+    页面预览提示词.md
+    施工单提示词.md
+    验收清单提示词.md
+    返工单提示词.md
+</code></pre>
+<p>这个结构不是为了形式，而是让你以后能追溯：每一次 AI 输出从哪里来，为什么这样做，验收是否通过，返工改了什么。</p>
+<h2 id="103-主案例完整沉淀示例"><a class="header" href="#103-主案例完整沉淀示例">10.3 主案例完整沉淀示例</a></h2>
+<h3 id="1-产品合同"><a class="header" href="#1-产品合同">1. 产品合同</a></h3>
+<pre><code class="language-text">AI 员工任务创建与草案确认闭环：用户输入任务描述，系统生成可编辑草案，用户确认后任务进入列表，初始状态为“待执行”。
+</code></pre>
+<h3 id="2-第一切片"><a class="header" href="#2-第一切片">2. 第一切片</a></h3>
+<pre><code class="language-text">任务创建 → 草案生成 → 草案编辑 → 确认创建 → 列表显示。
+</code></pre>
+<h3 id="3-页面预览"><a class="header" href="#3-页面预览">3. 页面预览</a></h3>
+<p>包含任务创建页、草案确认区、任务列表页、简版详情；审批弹窗作为后续伏笔，不施工。</p>
+<h3 id="4-施工单"><a class="header" href="#4-施工单">4. 施工单</a></h3>
+<pre><code class="language-text">只实现第一切片的前端可交互版本，使用 mock 数据，不接真实后端，不做审批、真实执行、权限和长期记忆。
+</code></pre>
+<h3 id="5-验收清单"><a class="header" href="#5-验收清单">5. 验收清单</a></h3>
+<ul>
+<li>空输入不能提交；</li>
+<li>输入后能生成草案；</li>
+<li>草案可编辑；</li>
+<li>确认后任务进入列表；</li>
+<li>状态为“待执行”；</li>
+<li>不出现越界功能。</li>
+</ul>
+<h3 id="6-返工单示例"><a class="header" href="#6-返工单示例">6. 返工单示例</a></h3>
+<pre><code class="language-text">只修复空输入仍可提交、状态文案错误两个问题。不要新增页面，不要改动列表布局。
+</code></pre>
+<h3 id="7-下一切片"><a class="header" href="#7-下一切片">7. 下一切片</a></h3>
+<pre><code class="language-text">高风险任务 → 触发审批弹窗 → 用户同意/拒绝 → 状态更新。
+</code></pre>
+<h2 id="104-如何管理提示词资产"><a class="header" href="#104-如何管理提示词资产">10.4 如何管理提示词资产</a></h2>
+<p>很多人每次都重新问 GPT，导致质量不稳定。更好的方式是把有效提示词保存下来，形成自己的提示词资产。</p>
+<p>建议至少保存 6 类：压缩模糊需求提示词、产品合同生成提示词、产品合同审查提示词、页面预览提示词、施工单提示词、验收/返工提示词。</p>
+<p>每条提示词旁边记录：使用场景、输入材料、输出结果、哪次项目使用过、效果如何、后续改进。</p>
+<h2 id="105-如何做项目复盘"><a class="header" href="#105-如何做项目复盘">10.5 如何做项目复盘</a></h2>
+<p>复盘不要写成流水账，要围绕控制力。</p>
+<pre><code class="language-markdown"># 切片复盘
+
+## 1. 本切片原目标
+
+## 2. 实际完成情况
+
+## 3. 哪些验收项通过
+
+## 4. 哪些验收项未通过
+
+## 5. 偏航发生在哪里
+- 产品合同阶段：
+- 页面预览阶段：
+- 施工单阶段：
+- coding agent 实现阶段：
+- 验收阶段：
+
+## 6. 哪条提示词有效
+
+## 7. 哪条提示词需要改写
+
+## 8. 下次提前增加什么检查项
+
+## 9. 下一切片建议
+</code></pre>
+<p>主案例复盘示例：</p>
+<pre><code class="language-markdown"># slice-001 复盘：任务创建闭环
+
+## 原目标
+实现任务创建 → 草案确认 → 任务入列表。
+
+## 完成情况
+页面可运行，任务可以创建并进入列表。
+
+## 通过项
+- 输入任务后能生成草案。
+- 草案可编辑。
+- 确认后列表新增任务。
+
+## 未通过项
+- 空输入仍可点击生成。
+- 列表状态显示为“处理中”，不是“待执行”。
+
+## 偏航位置
+施工单里写了“基础状态展示”，但没有明确状态文案必须是“待执行”。
+
+## 下次改进
+验收清单中提前写明状态文案。
+
+## 下一切片
+高风险审批弹窗。
+</code></pre>
+<h2 id="106-新手每周训练节奏"><a class="header" href="#106-新手每周训练节奏">10.6 新手每周训练节奏</a></h2>
+<h3 id="第-1-周只练压缩需求"><a class="header" href="#第-1-周只练压缩需求">第 1 周：只练压缩需求</a></h3>
+<p>每天拿一个想法，压缩成产品合同，不写代码。</p>
+<h3 id="第-2-周只练页面预览"><a class="header" href="#第-2-周只练页面预览">第 2 周：只练页面预览</a></h3>
+<p>把产品合同转成页面预览，重点练状态和用户路径。</p>
+<h3 id="第-3-周只练施工单"><a class="header" href="#第-3-周只练施工单">第 3 周：只练施工单</a></h3>
+<p>把页面预览转成 coding agent 施工单，重点练做/不做边界。</p>
+<h3 id="第-4-周只练验收和返工"><a class="header" href="#第-4-周只练验收和返工">第 4 周：只练验收和返工</a></h3>
+<p>模拟或真实跑项目，写验收清单、返工单和复盘。</p>
+<p>这样训练 30 天，你不一定成为专业程序员，但会明显提升对 AI 开发过程的控制力。</p>
+<h2 id="107-判断自己是否真正学会"><a class="header" href="#107-判断自己是否真正学会">10.7 判断自己是否真正学会</a></h2>
+<p>你可以用下面 10 个问题自测：</p>
+<ol>
+<li>我能不能把一个大想法压缩成一个闭环？</li>
+<li>我能不能写出本版不做什么？</li>
+<li>我能不能阻止 GPT 发散？</li>
+<li>我能不能先要求页面预览？</li>
+<li>我能不能判断一个切片是否过大？</li>
+<li>我能不能写出 coding agent 可执行的施工单？</li>
+<li>我能不能在施工前写验收清单？</li>
+<li>我能不能把“不好用”改写成返工单？</li>
+<li>我能不能复盘偏航发生在哪里？</li>
+<li>我能不能规划下一切片？</li>
+</ol>
+<p>如果这 10 个问题大部分能回答，你已经掌握了本书的核心方法。</p>
+<h2 id="108-本章扩写小结"><a class="header" href="#108-本章扩写小结">10.8 本章扩写小结</a></h2>
+<p>AI 协同开发的长期能力，不是记住某个模型怎么用，而是建立一套能持续复用的开发系统。</p>
+<p>从产品合同到页面预览，从切片到施工单，从验收到返工，再到复盘和下一切片，这套流程会让你在 AI 越来越强的时代，不只是“让 AI 写代码”，而是能真正把产品往目标推进。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="09_返工单.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="附录A_模板包.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="09_返工单.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="附录A_模板包.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

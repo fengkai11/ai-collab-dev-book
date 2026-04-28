@@ -1,0 +1,775 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 7 章：如何给 Claude Code / Codex 写施工任务单 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-7-章如何给-claude-code--codex-写施工任务单"><a class="header" href="#第-7-章如何给-claude-code--codex-写施工任务单">第 7 章：如何给 Claude Code / Codex 写施工任务单</a></h1>
+<blockquote>
+<p>版本：v0.2 核心训练扩写版<br />
+本章定位：核心训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要学会把产品切片转成 coding agent 能执行的施工任务单。施工单不是 PRD，而是一次清晰的施工命令。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>施工任务单：面向 coding agent 的单次开发指令。</li>
+<li>输入：产品合同、页面预览、切片边界。</li>
+<li>输出：本次必须交付的页面、状态、数据。</li>
+<li>约束：不做项和技术限制。</li>
+<li>验收标准：完成后逐条对照。</li>
+<li>变更文件清单：说明改了什么。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>施工单只做一个切片。</li>
+<li>施工单必须写清不做什么。</li>
+<li>施工单必须要求完成后汇报。</li>
+<li>施工单越清楚，返工越可控。</li>
+<li>不要把完整 PRD 原样丢给 coding agent。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>主案例施工目标：实现 AI 员工任务创建页的前端静态可交互版本。用户能输入任务、生成草案、编辑草案、确认创建、任务进入列表。使用 mock 数据，不接真实后端。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">请根据前面的文档把 AI 员工系统做出来。
+你看哪里不合理就顺便优化。
+</code></pre>
+<p>范围巨大，没有验收，没有禁止扩展，还允许无关改动。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">请只实现第一切片：任务创建、草案确认、任务进入列表。
+不要实现审批、真实执行、权限、长期记忆。
+使用 mock 数据。完成后提供变更文件清单、运行方式、验收对照和已知问题。
+</code></pre>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-写任务名称"><a class="header" href="#1-写任务名称">1. 写任务名称</a></h3>
+<p>名称要小，例如任务创建与草案确认第一切片。</p>
+<h3 id="2-写本次目标"><a class="header" href="#2-写本次目标">2. 写本次目标</a></h3>
+<p>用一句话定义可见结果。</p>
+<h3 id="3-列输入材料"><a class="header" href="#3-列输入材料">3. 列输入材料</a></h3>
+<p>产品合同、页面预览、切片边界、验收清单。</p>
+<h3 id="4-列必须实现"><a class="header" href="#4-列必须实现">4. 列必须实现</a></h3>
+<p>输入框、生成按钮、草案区、确认、列表、状态。</p>
+<h3 id="5-写明确不做"><a class="header" href="#5-写明确不做">5. 写明确不做</a></h3>
+<p>审批、真实执行、记忆、权限、后端持久化。</p>
+<h3 id="6-要求完成后汇报"><a class="header" href="#6-要求完成后汇报">6. 要求完成后汇报</a></h3>
+<p>变更文件、运行方式、验收结果、已知问题。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">你是 coding agent。请严格按施工任务单执行，不要自行扩展，不要改无关文件。如果需求不明确，列为待确认项。完成后按：完成内容、变更文件、运行方式、验收对照、已知问题回复。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="单页施工任务单模板"><a class="header" href="#单页施工任务单模板">单页施工任务单模板</a></h3>
+<p>给 coding agent 的核心交付物。</p>
+<pre><code class="language-text">任务名称：
+背景摘要：
+本次目标：
+输入材料：
+页面/功能范围：
+必须实现：
+数据策略：
+明确不做：
+技术约束：
+验收标准：
+完成后请汇报：
+</code></pre>
+<h3 id="变更文件清单模板"><a class="header" href="#变更文件清单模板">变更文件清单模板</a></h3>
+<p>用于要求 coding agent 说明改动。</p>
+<pre><code class="language-text">新增文件：
+- 路径：
+  用途：
+修改文件：
+- 路径：
+  修改内容：
+删除文件：
+- 路径：
+  原因：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1识别不合格施工单的问题"><a class="header" href="#练习-1识别不合格施工单的问题">练习 1：识别不合格施工单的问题。</a></h3>
+<h3 id="练习-2补全施工单字段"><a class="header" href="#练习-2补全施工单字段">练习 2：补全施工单字段。</a></h3>
+<h3 id="练习-3为主案例写施工单"><a class="header" href="#练习-3为主案例写施工单">练习 3：为主案例写施工单。</a></h3>
+<h3 id="练习-4为自己的项目写施工单"><a class="header" href="#练习-4为自己的项目写施工单">练习 4：为自己的项目写施工单。</a></h3>
+<h3 id="练习-5把过大的施工单压缩成第一切片"><a class="header" href="#练习-5把过大的施工单压缩成第一切片">练习 5：把过大的施工单压缩成第一切片。</a></h3>
+<h3 id="练习-6让-gpt-审查施工单"><a class="header" href="#练习-6让-gpt-审查施工单">练习 6：让 GPT 审查施工单。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>不合格点：范围大、没验收、没不做项、允许顺便优化。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>输入：合同/预览/边界；输出：页面/mock/列表；约束：不接后端；验收：空输入禁用等。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>可参考本章正确示范。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>自己的项目也要只做一个切片。</p>
+<h3 id="练习-5-参考"><a class="header" href="#练习-5-参考">练习 5 参考</a></h3>
+<p>外贸系统可压缩为输入国家和产品，生成候选客户列表。</p>
+<h3 id="练习-6-参考"><a class="header" href="#练习-6-参考">练习 6 参考</a></h3>
+<p>审查重点：范围、验收、不做项、脑补风险。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+施工单只做一个切片。</li>
+<li><input disabled="" type="checkbox"/>
+写清输入材料。</li>
+<li><input disabled="" type="checkbox"/>
+写清交付结果。</li>
+<li><input disabled="" type="checkbox"/>
+写清不做项。</li>
+<li><input disabled="" type="checkbox"/>
+包含可验收标准。</li>
+<li><input disabled="" type="checkbox"/>
+要求变更文件清单。</li>
+<li><input disabled="" type="checkbox"/>
+禁止无关改动。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区把-prd-直接丢给-coding-agent"><a class="header" href="#误区把-prd-直接丢给-coding-agent">误区：把 PRD 直接丢给 coding agent</a></h3>
+<p>PRD 太大，施工单要窄。</p>
+<h3 id="误区没有要求汇报"><a class="header" href="#误区没有要求汇报">误区：没有要求汇报</a></h3>
+<p>没有变更说明，你很难审查。</p>
+<h3 id="误区一次施工多个切片"><a class="header" href="#误区一次施工多个切片">误区：一次施工多个切片</a></h3>
+<p>多个切片会让返工难定位。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>施工任务单是从产品思考进入代码实现的桥梁。它要小、清楚、可验收。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章学习如何用验收清单检查 AI 产出。</p>
+<h2 id="施工单和普通提示词的区别"><a class="header" href="#施工单和普通提示词的区别">施工单和普通提示词的区别</a></h2>
+<p>普通提示词可以用于讨论，施工单用于执行。讨论时可以开放一点，施工时必须收敛。施工单必须回答 coding agent 最关心的几个问题：</p>
+<ul>
+<li>我这次到底改什么？</li>
+<li>我参考哪些材料？</li>
+<li>哪些文件或页面可能相关？</li>
+<li>哪些功能不能碰？</li>
+<li>做完如何证明完成？</li>
+<li>如果需求不清楚怎么办？</li>
+</ul>
+<p>如果这些问题没写清，coding agent 就会用自己的判断补全。</p>
+<h2 id="施工单里的不做项要写得像禁止清单"><a class="header" href="#施工单里的不做项要写得像禁止清单">施工单里的“不做项”要写得像禁止清单</a></h2>
+<p>不要只写“不要发散”。要写具体：</p>
+<pre><code class="language-text">本次不做：
+1. 不做真实 AI 执行；
+2. 不接工具调用；
+3. 不新增审批页面；
+4. 不新增员工配置页；
+5. 不引入登录注册；
+6. 不设计数据库；
+7. 不改全局路由；
+8. 不重构无关组件。
+</code></pre>
+<p>越具体，越安全。</p>
+<h2 id="施工单里的验收标准要能让-coding-agent-自查"><a class="header" href="#施工单里的验收标准要能让-coding-agent-自查">施工单里的验收标准要能让 coding agent 自查</a></h2>
+<p>不要只写：</p>
+<pre><code class="language-text">功能正常。
+</code></pre>
+<p>要写：</p>
+<pre><code class="language-text">1. 空输入时生成按钮禁用；
+2. 输入任务后可生成草案；
+3. 草案字段可编辑；
+4. 点击确认后任务进入列表；
+5. 列表状态显示“待执行”；
+6. 页面不出现审批、权限、员工配置等入口。
+</code></pre>
+<p>这样 coding agent 完成后可以逐条汇报。</p>
+<h2 id="完成后汇报格式很重要"><a class="header" href="#完成后汇报格式很重要">完成后汇报格式很重要</a></h2>
+<p>很多人只让 coding agent 写代码，不要求汇报。结果你不知道它改了哪里，也不知道哪些验收项通过了。建议每次施工单最后都加：</p>
+<pre><code class="language-text">完成后请回复：
+1. 本次完成了什么；
+2. 新增/修改/删除了哪些文件；
+3. 如何运行和查看；
+4. 对照验收清单逐条说明是否通过；
+5. 已知问题；
+6. 是否有任何超范围改动。
+</code></pre>
+<p>这能显著降低审查难度。</p>
+<h2 id="施工前二次检查提示词"><a class="header" href="#施工前二次检查提示词">施工前二次检查提示词</a></h2>
+<p>在把施工单发给 Codex/Claude Code 前，可以先让 GPT 审查：</p>
+<pre><code class="language-text">请你扮演严格的施工单审查员。
+检查下面施工单是否会导致 coding agent 发散。
+重点检查：范围是否过大、不做项是否具体、验收是否可执行、是否有顺手优化风险、是否缺少完成后汇报格式。
+只输出问题和修改建议。
+</code></pre>
+<h2 id="施工单版本管理"><a class="header" href="#施工单版本管理">施工单版本管理</a></h2>
+<p>建议每个切片施工单保存版本：</p>
+<pre><code class="language-text">slice-001-construction-v1.md
+slice-001-construction-review.md
+slice-001-construction-v2.md
+</code></pre>
+<h2 id="不要覆盖旧版本旧版本能帮助你复盘到底是哪里没写清导致返工"><a class="header" href="#不要覆盖旧版本旧版本能帮助你复盘到底是哪里没写清导致返工">不要覆盖旧版本。旧版本能帮助你复盘：到底是哪里没写清导致返工。</a></h2>
+<h1 id="v02-核心训练扩写把切片变成-coding-agent-能执行的施工单"><a class="header" href="#v02-核心训练扩写把切片变成-coding-agent-能执行的施工单">v0.2 核心训练扩写：把切片变成 Coding Agent 能执行的施工单</a></h1>
+<blockquote>
+<p>本节扩写第 7 章。目标是让读者能写出“Codex / Claude Code 看了就能开工、做完后你也能验收”的施工任务单。</p>
+</blockquote>
+<h2 id="71-施工任务单不是-prd"><a class="header" href="#71-施工任务单不是-prd">7.1 施工任务单不是 PRD</a></h2>
+<p>很多新手会把 PRD、产品想法、技术方案、开发命令混在一起给 coding agent。</p>
+<p>例如：</p>
+<pre><code class="language-text">我想做一个 AI 员工系统，支持任务创建、审批、执行、记忆、权限、日志。请你帮我实现。
+</code></pre>
+<p>这不是施工单。这只是一个大愿望。</p>
+<p>施工单的特点是：</p>
+<ol>
+<li>只面向一次施工。</li>
+<li>只完成一个切片。</li>
+<li>输入材料明确。</li>
+<li>输出物明确。</li>
+<li>约束明确。</li>
+<li>验收标准明确。</li>
+<li>完成后必须汇报变更文件、运行方式、已知问题。</li>
+</ol>
+<p>你可以把施工单理解成：给一个能力很强但不了解你全部意图的施工队下达的“本次只干这些活”的书面命令。</p>
+<h2 id="72-一张合格施工单的-9-个字段"><a class="header" href="#72-一张合格施工单的-9-个字段">7.2 一张合格施工单的 9 个字段</a></h2>
+<h3 id="字段-1任务标题"><a class="header" href="#字段-1任务标题">字段 1：任务标题</a></h3>
+<p>标题要表达当前切片，不要写“开发系统”。</p>
+<p>推荐：</p>
+<pre><code class="language-text">实现任务创建 → 草案确认 → 入列表前端切片
+</code></pre>
+<p>不推荐：</p>
+<pre><code class="language-text">开发 AI 员工系统
+</code></pre>
+<h3 id="字段-2任务目标"><a class="header" href="#字段-2任务目标">字段 2：任务目标</a></h3>
+<p>用 2–3 句话说明本次施工的终点。</p>
+<h3 id="字段-3输入材料"><a class="header" href="#字段-3输入材料">字段 3：输入材料</a></h3>
+<p>告诉 coding agent 它应该依据哪些材料工作。</p>
+<p>例如：产品合同、页面预览、切片边界、验收清单。</p>
+<h3 id="字段-4实现范围"><a class="header" href="#字段-4实现范围">字段 4：实现范围</a></h3>
+<p>列出要做的内容。</p>
+<h3 id="字段-5明确不做"><a class="header" href="#字段-5明确不做">字段 5：明确不做</a></h3>
+<p>这是防止发散的关键。</p>
+<h3 id="字段-6技术约束"><a class="header" href="#字段-6技术约束">字段 6：技术约束</a></h3>
+<p>例如：使用 mock 数据、不接真实后端、不引入新框架、不改无关页面。</p>
+<h3 id="字段-7验收标准"><a class="header" href="#字段-7验收标准">字段 7：验收标准</a></h3>
+<p>每条都要能手工测试。</p>
+<h3 id="字段-8交付要求"><a class="header" href="#字段-8交付要求">字段 8：交付要求</a></h3>
+<p>要求 coding agent 完成后汇报：</p>
+<ul>
+<li>改了哪些文件</li>
+<li>如何运行</li>
+<li>如何验证</li>
+<li>已知问题</li>
+<li>哪些验收项已通过</li>
+</ul>
+<h3 id="字段-9异常处理"><a class="header" href="#字段-9异常处理">字段 9：异常处理</a></h3>
+<p>如果发现材料冲突或范围不清，应该先列出问题，而不是自行扩展。</p>
+<h2 id="73-主案例施工单-v1不合格版本"><a class="header" href="#73-主案例施工单-v1不合格版本">7.3 主案例施工单 v1：不合格版本</a></h2>
+<pre><code class="language-text">请根据前面的文档实现 AI 员工系统的任务功能。
+</code></pre>
+<p>问题非常多：</p>
+<ul>
+<li>“前面的文档”不明确。</li>
+<li>“任务功能”范围不明确。</li>
+<li>没有做 / 不做边界。</li>
+<li>没有说明 mock 还是后端。</li>
+<li>没有验收标准。</li>
+<li>没有要求输出变更说明。</li>
+</ul>
+<p>这种施工单很容易导致 coding agent 自行发挥。它可能新建一堆页面，也可能设计数据库，还可能加入权限和审批。最后你会觉得“它写了很多，但不是我要的”。</p>
+<h2 id="74-主案例施工单-v2合格版本"><a class="header" href="#74-主案例施工单-v2合格版本">7.4 主案例施工单 v2：合格版本</a></h2>
+<pre><code class="language-text"># 施工任务单：实现任务创建 → 草案确认 → 入列表前端切片
+
+## 1. 任务目标
+
+请实现 AI 员工任务系统的第一切片：用户输入任务描述，系统生成一个可编辑的任务草案；用户确认后，任务进入任务列表，初始状态显示为“待执行”。
+
+本次只实现前端可交互版本，使用 mock 草案生成和前端本地状态，不接真实后端。
+
+## 2. 输入材料
+
+请依据以下材料施工：
+1. 一页纸产品合同：任务创建与确认闭环。
+2. 页面预览：任务创建页、草案确认区、任务列表区。
+3. 切片边界：只做任务创建、草案确认、任务入列表。
+4. 验收标准：见第 6 节。
+
+## 3. 实现范围
+
+请实现：
+1. 任务描述输入框。
+2. “生成草案”按钮。
+3. 空输入时按钮禁用或提交时提示。
+4. 点击生成草案后展示加载态。
+5. mock 生成任务草案。
+6. 草案卡片展示字段：任务标题、任务目标、预期产出、风险等级。
+7. 草案字段可编辑。
+8. “确认创建”按钮。
+9. 确认后任务进入列表。
+10. 列表显示任务标题、状态、创建时间。
+11. 初始状态为“待执行”。
+
+## 4. 明确不做
+
+请不要实现：
+1. 真实 agent 执行。
+2. 真实后端接口。
+3. 数据库持久化。
+4. 高风险审批。
+5. 多员工调度。
+6. 长期记忆。
+7. 工具调用。
+8. 权限系统。
+9. 通知系统。
+10. 部署配置。
+
+## 5. 技术约束
+
+1. 优先在现有项目结构内实现，不要大规模重构。
+2. 不要引入新的大型框架，除非项目已使用。
+3. mock 数据应集中放置，便于后续替换为真实接口。
+4. 不要改动与本切片无关的页面和模块。
+5. 如果发现现有代码结构与任务冲突，请先在完成说明中列出，不要自行扩大改造范围。
+
+## 6. 验收标准
+
+1. 页面存在任务描述输入框。
+2. 空输入时不能成功生成草案。
+3. 输入任务后点击“生成草案”，能看到加载态。
+4. 加载结束后出现草案卡片。
+5. 草案字段可以编辑。
+6. 点击“确认创建”后，任务进入列表。
+7. 列表中任务状态为“待执行”。
+8. 页面没有出现审批、执行、员工配置、权限等本切片之外功能。
+
+## 7. 完成后请汇报
+
+请在完成后输出：
+1. 变更文件清单。
+2. 如何运行项目。
+3. 如何手工验证每条验收标准。
+4. 已知问题。
+5. 哪些内容是 mock，后续如何替换。
+</code></pre>
+<p>这就是一张可以给 Codex / Claude Code 的施工单。</p>
+<h2 id="75-三组错误施工单-vs-正确施工单"><a class="header" href="#75-三组错误施工单-vs-正确施工单">7.5 三组错误施工单 vs 正确施工单</a></h2>
+<h3 id="组-1范围过大"><a class="header" href="#组-1范围过大">组 1：范围过大</a></h3>
+<p>错误施工单：</p>
+<pre><code class="language-text">请实现 AI 员工系统，包括任务、审批、执行、记忆和权限。
+</code></pre>
+<p>正确施工单：</p>
+<pre><code class="language-text">请只实现第一切片：任务创建、草案确认、任务进入列表。不要实现审批、执行、记忆和权限。
+</code></pre>
+<h3 id="组-2没有交付要求"><a class="header" href="#组-2没有交付要求">组 2：没有交付要求</a></h3>
+<p>错误施工单：</p>
+<pre><code class="language-text">做完告诉我。
+</code></pre>
+<p>正确施工单：</p>
+<pre><code class="language-text">完成后请提供变更文件清单、运行方式、验收项完成情况、已知问题和 mock 内容说明。
+</code></pre>
+<h3 id="组-3允许顺手优化"><a class="header" href="#组-3允许顺手优化">组 3：允许顺手优化</a></h3>
+<p>错误施工单：</p>
+<pre><code class="language-text">你看哪里不合理就顺手优化一下。
+</code></pre>
+<p>正确施工单：</p>
+<pre><code class="language-text">不要改动与本切片无关的页面、路由、状态管理和样式体系。如发现问题，请在完成说明中列为建议，不要直接修改。
+</code></pre>
+<h2 id="76-字段解释单页施工任务单模板"><a class="header" href="#76-字段解释单页施工任务单模板">7.6 字段解释：单页施工任务单模板</a></h2>
+<h3 id="任务标题"><a class="header" href="#任务标题">任务标题</a></h3>
+<p>标题用于让 coding agent 和你自己都记住本次施工边界。不要用“第一阶段开发”这种模糊标题。</p>
+<h3 id="背景"><a class="header" href="#背景">背景</a></h3>
+<p>背景只写必要内容。过多背景会让 agent 自行扩展。</p>
+<h3 id="当前切片"><a class="header" href="#当前切片">当前切片</a></h3>
+<p>这是施工单的核心锚点。最好复制第 5 章的一句话定义。</p>
+<h3 id="输入材料"><a class="header" href="#输入材料">输入材料</a></h3>
+<p>输入材料越明确，agent 越不容易翻旧账或乱引用。</p>
+<h3 id="实现范围"><a class="header" href="#实现范围">实现范围</a></h3>
+<p>写成编号列表。每一条最好对应页面上的一个可见结果或状态变化。</p>
+<h3 id="不做范围"><a class="header" href="#不做范围">不做范围</a></h3>
+<p>不做范围要具体，越具体越好。</p>
+<h3 id="技术约束"><a class="header" href="#技术约束">技术约束</a></h3>
+<p>新手不一定懂技术细节，但可以写过程约束，例如：</p>
+<pre><code class="language-text">不要大规模重构。
+不要引入无关依赖。
+不要修改无关文件。
+</code></pre>
+<h3 id="验收标准"><a class="header" href="#验收标准">验收标准</a></h3>
+<p>施工单里的验收标准应该和第 8 章验收清单一致。不要施工时一套标准，验收时另一套标准。</p>
+<h3 id="完成汇报"><a class="header" href="#完成汇报">完成汇报</a></h3>
+<p>这个字段很重要。因为你不一定看得懂所有代码，但你可以看懂 agent 的变更说明和验证说明。</p>
+<h2 id="77-空白模板单页施工任务单"><a class="header" href="#77-空白模板单页施工任务单">7.7 空白模板：单页施工任务单</a></h2>
+<pre><code class="language-text"># 施工任务单：{任务标题}
+
+## 1. 任务目标
+
+{用 2–3 句话说明本次要完成的切片。}
+
+## 2. 当前切片
+
+{复制第一切片一句话定义。}
+
+## 3. 输入材料
+
+1. {材料1}
+2. {材料2}
+3. {材料3}
+
+## 4. 实现范围
+
+请实现：
+1.
+2.
+3.
+
+## 5. 明确不做
+
+请不要实现：
+1.
+2.
+3.
+
+## 6. 技术约束
+
+1.
+2.
+3.
+
+## 7. 验收标准
+
+1.
+2.
+3.
+
+## 8. 完成后请汇报
+
+1. 变更文件清单。
+2. 运行方式。
+3. 验收项完成情况。
+4. 已知问题。
+5. mock 内容说明。
+
+## 9. 遇到不确定时
+
+如果发现材料冲突、范围不清或需要额外决策，请先列出问题，不要自行扩大实现范围。
+</code></pre>
+<h2 id="78-claude-code--codex-可复制施工提示词"><a class="header" href="#78-claude-code--codex-可复制施工提示词">7.8 Claude Code / Codex 可复制施工提示词</a></h2>
+<pre><code class="language-text">你现在是 coding agent，请严格按照下面施工任务单执行。
+
+重要要求：
+1. 只完成当前切片，不要扩展功能。
+2. 不要实现“明确不做”列表中的任何内容。
+3. 不要大规模重构无关代码。
+4. 如发现材料冲突，请先在完成说明中列出，不要自行扩大范围。
+5. 完成后必须输出变更文件清单、运行方式、验收项完成情况、已知问题。
+
+施工任务单如下：
+
+{粘贴施工任务单}
+</code></pre>
+<h2 id="79-施工单越界风险检查表"><a class="header" href="#79-施工单越界风险检查表">7.9 施工单越界风险检查表</a></h2>
+<p>在把施工单交给 Codex 前，先检查：</p>
+<pre><code class="language-text">施工单标题：
+检查日期：
+
+1. 是否只对应一个切片？是 / 否
+问题：
+
+2. 是否写清当前切片的一句话定义？是 / 否
+问题：
+
+3. 是否有明确不做范围？是 / 否
+缺少的不做项：
+
+4. 是否有验收标准？是 / 否
+不可验收项：
+
+5. 是否要求完成后汇报变更文件？是 / 否
+
+6. 是否禁止修改无关文件？是 / 否
+
+7. 是否说明 mock / 后端 / 数据策略？是 / 否
+
+8. 是否存在“顺手优化”“完整实现”“缺的自己补”之类危险表达？是 / 否
+
+最终判断：可以施工 / 修改后施工 / 不能施工
+</code></pre>
+<h2 id="710-主案例从切片定义到施工单的转换过程"><a class="header" href="#710-主案例从切片定义到施工单的转换过程">7.10 主案例：从切片定义到施工单的转换过程</a></h2>
+<h3 id="输入材料-1切片定义"><a class="header" href="#输入材料-1切片定义">输入材料 1：切片定义</a></h3>
+<pre><code class="language-text">用户输入任务描述，系统生成可编辑任务草案，用户确认后任务进入列表并显示为待执行。
+</code></pre>
+<h3 id="输入材料-2页面范围"><a class="header" href="#输入材料-2页面范围">输入材料 2：页面范围</a></h3>
+<pre><code class="language-text">任务创建页、草案确认区、任务列表区。
+</code></pre>
+<h3 id="输入材料-3不做边界"><a class="header" href="#输入材料-3不做边界">输入材料 3：不做边界</a></h3>
+<pre><code class="language-text">不做真实 agent、后端、数据库、审批、执行、权限、记忆。
+</code></pre>
+<h3 id="转换成施工项"><a class="header" href="#转换成施工项">转换成施工项</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>切片元素</th><th>施工项</th></tr></thead><tbody>
+<tr><td>用户输入任务描述</td><td>实现任务描述输入框</td></tr>
+<tr><td>生成草案</td><td>实现生成草案按钮和 mock 逻辑</td></tr>
+<tr><td>草案可编辑</td><td>实现草案卡片和字段编辑</td></tr>
+<tr><td>用户确认</td><td>实现确认创建按钮</td></tr>
+<tr><td>进入列表</td><td>实现任务列表状态更新</td></tr>
+<tr><td>状态待执行</td><td>列表状态字段显示“待执行”</td></tr>
+</tbody></table>
+</div>
+<p>这张转换表能帮你发现：施工单不是凭空写的，它来自切片定义。</p>
+<h2 id="711-练习扩写与参考答案"><a class="header" href="#711-练习扩写与参考答案">7.11 练习扩写与参考答案</a></h2>
+<h3 id="练习-1识别不合格施工单"><a class="header" href="#练习-1识别不合格施工单">练习 1：识别不合格施工单</a></h3>
+<p>施工单：</p>
+<pre><code class="language-text">请把 AI 员工系统第一版做出来，页面好看一点，功能完整一点，缺的你自己补。
+</code></pre>
+<p>参考答案：</p>
+<p>问题：</p>
+<pre><code class="language-text">1. “第一版”范围不清。
+2. “好看一点”不可验收。
+3. “功能完整一点”会导致发散。
+4. “缺的你自己补”允许脑补。
+5. 没有不做范围。
+6. 没有验收标准。
+</code></pre>
+<h3 id="练习-2补全施工单字段-1"><a class="header" href="#练习-2补全施工单字段-1">练习 2：补全施工单字段</a></h3>
+<p>缺失施工单：</p>
+<pre><code class="language-text">请实现任务创建页面。
+</code></pre>
+<p>参考补全：</p>
+<pre><code class="language-text">任务目标：实现任务创建 → 草案确认 → 入列表切片。
+实现范围：输入框、生成草案、草案编辑、确认创建、任务列表。
+不做范围：真实 agent、审批、执行、后端、数据库、权限。
+验收标准：空输入不能提交；输入后生成草案；草案可编辑；确认后入列表；状态为待执行。
+完成汇报：变更文件、运行方式、验收结果、已知问题。
+</code></pre>
+<h3 id="练习-3为主案例写施工单-1"><a class="header" href="#练习-3为主案例写施工单-1">练习 3：为主案例写施工单</a></h3>
+<p>可直接使用 7.4 的合格版本。</p>
+<h3 id="练习-4为自己的项目写施工单-1"><a class="header" href="#练习-4为自己的项目写施工单-1">练习 4：为自己的项目写施工单</a></h3>
+<p>示范：外贸询盘报价辅助工具。</p>
+<pre><code class="language-text">任务目标：用户粘贴客户询盘，系统生成可编辑报价草案。
+实现范围：询盘输入、生成报价草案、草案编辑、确认保存。
+不做范围：真实邮件发送、ERP 对接、库存校验、复杂价格策略。
+验收标准：空询盘不能生成；输入询盘后出现报价草案；报价字段可编辑；确认后进入报价记录列表。
+</code></pre>
+<h3 id="练习-5压缩施工范围"><a class="header" href="#练习-5压缩施工范围">练习 5：压缩施工范围</a></h3>
+<p>原施工单：</p>
+<pre><code class="language-text">实现外贸获客系统，包括客户搜索、评分、邮件发送、跟进、CRM。
+</code></pre>
+<p>压缩后：</p>
+<pre><code class="language-text">只实现第一切片：用户输入目标国家和产品关键词，系统生成 mock 客户列表，用户可以标记是否值得跟进。不要做邮件发送、自动跟进、CRM 和真实搜索。
+</code></pre>
+<h3 id="练习-6让-gpt-审查施工单-1"><a class="header" href="#练习-6让-gpt-审查施工单-1">练习 6：让 GPT 审查施工单</a></h3>
+<p>可复制提示词：</p>
+<pre><code class="language-text">请审查下面施工任务单是否适合交给 Codex / Claude Code 执行。
+重点检查：范围是否过大、是否缺少不做项、是否有不可验收标准、是否允许 coding agent 脑补、是否缺少完成汇报要求。
+请输出：问题清单、修改建议、修订版施工单。
+
+施工任务单：
+{粘贴施工单}
+</code></pre>
+<h2 id="712-读者常见卡点"><a class="header" href="#712-读者常见卡点">7.12 读者常见卡点</a></h2>
+<h3 id="卡点-1不知道技术约束怎么写"><a class="header" href="#卡点-1不知道技术约束怎么写">卡点 1：不知道技术约束怎么写</a></h3>
+<p>你不懂代码也可以写过程约束：不大规模重构、不引入无关依赖、不改无关文件、mock 数据集中放置。这些约束足够有价值。</p>
+<h3 id="卡点-2施工单越写越像-prd"><a class="header" href="#卡点-2施工单越写越像-prd">卡点 2：施工单越写越像 PRD</a></h3>
+<p>施工单不是描述未来系统，而是描述本次要改什么。凡是本次不做的，都移出施工单正文，放到后续计划。</p>
+<h3 id="卡点-3不知道怎么要求-agent-汇报"><a class="header" href="#卡点-3不知道怎么要求-agent-汇报">卡点 3：不知道怎么要求 agent 汇报</a></h3>
+<p>直接固定要求 5 件事：变更文件、运行方式、验收结果、已知问题、mock 说明。</p>
+<h3 id="卡点-4怕不让-agent-发挥会影响质量"><a class="header" href="#卡点-4怕不让-agent-发挥会影响质量">卡点 4：怕不让 agent 发挥会影响质量</a></h3>
+<p>施工阶段不需要自由发挥。你可以让它在完成说明中提出建议，但不要让它直接顺手改。</p>
+<h2 id="713-本章结束后的实际产出物"><a class="header" href="#713-本章结束后的实际产出物">7.13 本章结束后的实际产出物</a></h2>
+<p>完成本章后，你应该有：</p>
+<pre><code class="language-text">01_主案例第一切片施工单.md
+02_自己项目第一切片施工单.md
+03_施工单越界检查表.md
+04_Codex可复制施工提示词.md
+05_施工单审查结果.md
+</code></pre>
+<p>这些文件会直接进入第 8 章，用来生成和执行验收清单。</p>
+<h2 id="714-本章小结补强"><a class="header" href="#714-本章小结补强">7.14 本章小结补强</a></h2>
+<p>施工单是 AI 协同开发从“讨论”进入“实现”的分界线。</p>
+<p>记住一句话：</p>
+<pre><code class="language-text">一张施工单，只做一个切片；一条验收标准，对应一个可检查结果。
+</code></pre>
+<p>只要你能稳定写出施工单，coding agent 的能力就更容易被你驾驭，而不是反过来让它带着项目到处跑。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="06_如何给GPT下达切片任务.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="08_验收清单.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="06_如何给GPT下达切片任务.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="08_验收清单.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

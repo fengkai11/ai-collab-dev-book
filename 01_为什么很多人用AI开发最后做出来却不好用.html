@@ -1,0 +1,539 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 1 章：为什么很多人用 AI 开发，最后做出来却不好用 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-1-章为什么很多人用-ai-开发最后做出来却不好用"><a class="header" href="#第-1-章为什么很多人用-ai-开发最后做出来却不好用">第 1 章：为什么很多人用 AI 开发，最后做出来却不好用</a></h1>
+<blockquote>
+<p>版本：v0.1 全章初稿<br />
+本章定位：基础训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要学会识别 AI 开发偏航的真实原因：不是所有失败都能归因于模型不行。很多时候，是需求边界不清、反馈太晚、文档过多、验收缺失导致结果不好用。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>文档幻觉：文档看起来完整，但不能指导第一步开发。</li>
+<li>需求偏航：实现方向偏离真实目标。</li>
+<li>实现偏航：方向对，但代码或细节没做到。</li>
+<li>反馈太晚：直到系统很复杂才发现问题。</li>
+<li>可判断检查点：每个阶段都留下能审查的材料。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>AI 很容易把模糊需求扩展成看起来完整的系统。</li>
+<li>新手无法审查过多架构文档，反而失去控制权。</li>
+<li>做完了和能用了不是一回事。</li>
+<li>需求问题和实现问题必须分开判断。</li>
+<li>越早设置检查点，返工成本越低。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>主案例中，用户说“我要做 AI 员工系统”。错误流程是让 GPT 直接生成 40 份完整文档，随后交给 coding agent 实现。结果页面很多，流程复杂，但第一条任务创建链路并不顺畅。正确推进方式是先问：最小可验证闭环是什么？</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">我要做一个 AI 员工系统，请帮我生成完整 PRD、架构设计、数据库设计、前端设计、后端接口、开发任务拆解。
+</code></pre>
+<p>这个问法会导致文档爆炸、模型脑补、第一闭环缺失。你会得到很多看似专业的内容，但无法判断哪个该先做。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">我想做一个 AI 员工系统。请不要展开完整架构。
+请先帮我判断：这个想法里最小可验证闭环是什么？
+只输出 3 个候选闭环，并说明哪个最适合作为第一切片。
+</code></pre>
+<p>这个问法先要求 AI 收敛，而不是扩张。</p>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-识别文档幻觉"><a class="header" href="#1-识别文档幻觉">1. 识别文档幻觉</a></h3>
+<p>判断一份文档是否有用，不看它多长，而看它能否支持你写出第一张施工任务单。</p>
+<h3 id="2-区分需求偏航和实现偏航"><a class="header" href="#2-区分需求偏航和实现偏航">2. 区分需求偏航和实现偏航</a></h3>
+<p>如果目标、流程、文案或交互没定义清楚，是需求问题；如果定义清楚但代码没做到，是实现问题。</p>
+<h3 id="3-提前反馈"><a class="header" href="#3-提前反馈">3. 提前反馈</a></h3>
+<p>不要等完整系统做完才看效果。先审产品合同，再审页面预览，再审施工单，再验收代码。</p>
+<h3 id="4-控制审查带宽"><a class="header" href="#4-控制审查带宽">4. 控制审查带宽</a></h3>
+<p>新手无法同时审查完整架构、数据库、接口、前端和 agent 编排，所以必须压缩输出范围。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请审查下面的 AI 开发计划，判断是否存在文档爆炸、需求偏航、反馈太晚的问题。
+请按“问题 → 风险 → 修改建议”输出，不要继续扩展方案。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="ai-开发偏航诊断表"><a class="header" href="#ai-开发偏航诊断表">AI 开发偏航诊断表</a></h3>
+<p>用于判断当前项目到底哪里偏了。</p>
+<pre><code class="language-text">项目名称：
+当前阶段：
+原本目标：
+AI 实际输出/实现：
+偏差表现：
+[ ] 需求偏航
+[ ] 实现偏航
+[ ] 文档过多
+[ ] 反馈太晚
+最早可发现的检查点：
+下一步收敛动作：
+</code></pre>
+<h3 id="需求问题-vs-实现问题判断表"><a class="header" href="#需求问题-vs-实现问题判断表">需求问题 vs 实现问题判断表</a></h3>
+<p>用于决定先改产品定义还是先改代码。</p>
+<pre><code class="language-text">问题描述：
+当前结果：
+期望结果：
+产品合同是否定义：
+页面预览是否定义：
+验收清单是否定义：
+判断：需求问题/实现问题/需求未定义
+下一步：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1给一个完整系统目录标出第一阶段不该展开的内容"><a class="header" href="#练习-1给一个完整系统目录标出第一阶段不该展开的内容">练习 1：给一个完整系统目录，标出第一阶段不该展开的内容。</a></h3>
+<h3 id="练习-2判断-6-个失败现象属于需求偏航还是实现偏航"><a class="header" href="#练习-2判断-6-个失败现象属于需求偏航还是实现偏航">练习 2：判断 6 个失败现象属于需求偏航还是实现偏航。</a></h3>
+<h3 id="练习-3把一个大而全提示词改写成最小闭环提示词"><a class="header" href="#练习-3把一个大而全提示词改写成最小闭环提示词">练习 3：把一个“大而全提示词”改写成“最小闭环提示词”。</a></h3>
+<h3 id="练习-4复盘一次自己使用-ai-开发时的失控点"><a class="header" href="#练习-4复盘一次自己使用-ai-开发时的失控点">练习 4：复盘一次自己使用 AI 开发时的失控点。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>第一阶段通常不该展开长期记忆、复杂权限、多 agent 调度、插件市场等，应该保留任务创建、草案确认、任务列表这类可见闭环。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>空输入仍可提交是实现问题；用户不知道下一步点哪里多半是需求或交互问题；AI 自行加入员工配置页是需求偏航。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>把“完整设计系统”改成“先识别 3 个候选闭环，推荐第一切片，并列出本版不做项”。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>示范：我在文档阶段失控，因为没有写不做项，导致 AI 输出一堆我无法审查的模块。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+我能解释文档幻觉。</li>
+<li><input disabled="" type="checkbox"/>
+我能区分需求偏航和实现偏航。</li>
+<li><input disabled="" type="checkbox"/>
+我知道为什么反馈要提前。</li>
+<li><input disabled="" type="checkbox"/>
+我能为项目设置检查点。</li>
+<li><input disabled="" type="checkbox"/>
+我能改写大而全提示词。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区输出越多越专业"><a class="header" href="#误区输出越多越专业">误区：输出越多越专业</a></h3>
+<p>真正的进展是可验证的，不是文件数量。</p>
+<h3 id="误区所有问题都让-coding-agent-修"><a class="header" href="#误区所有问题都让-coding-agent-修">误区：所有问题都让 coding agent 修</a></h3>
+<p>如果需求没定义清楚，coding agent 只会继续猜。</p>
+<h3 id="误区不懂代码就不能验收"><a class="header" href="#误区不懂代码就不能验收">误区：不懂代码就不能验收</a></h3>
+<p>你可以从页面、流程、状态、文案开始验收。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>本章说明：AI 开发做偏，常常是过程失控，而不是单纯模型能力不足。你需要用检查点把开发过程拆开。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章正式讲切片式开发：什么是好切片，为什么它比大而全设计更适合新手。</p>
+<h2 id="补充案例一个典型的新手失控链路"><a class="header" href="#补充案例一个典型的新手失控链路">补充案例：一个典型的新手失控链路</a></h2>
+<p>很多新手的失控不是突然发生的，而是一步一步发生的。</p>
+<p>第一步，他说：“我想做一个系统。”<br />
+第二步，GPT 输出一份很完整的规划。<br />
+第三步，他觉得“既然 GPT 都写了，应该有道理”。<br />
+第四步，他把文档丢给 coding agent。<br />
+第五步，coding agent 生成了很多文件。<br />
+第六步，他打开页面，发现能运行，但不是自己想要的。<br />
+第七步，他开始说“帮我优化一下”。<br />
+第八步，AI 又改了很多东西。<br />
+第九步，项目越来越复杂，他越来越不敢动。</p>
+<p>这个链路里，真正的错误不是某一步写错了，而是每一步都没有检查点。产品合同没有检查，页面预览没有检查，施工范围没有检查，验收标准没有检查，返工范围没有检查。</p>
+<h2 id="更细的偏航分类"><a class="header" href="#更细的偏航分类">更细的偏航分类</a></h2>
+<h3 id="1-目标偏航"><a class="header" href="#1-目标偏航">1. 目标偏航</a></h3>
+<p>目标偏航是最早的偏航。例如你原本想验证“用户能不能创建 AI 任务”，结果 AI 开始帮你设计“AI 员工组织管理平台”。这时还没写代码，但方向已经偏了。</p>
+<p>处理方法：回到一句话目标，问“第一版只完成哪一个动作仍然有价值？”</p>
+<h3 id="2-范围偏航"><a class="header" href="#2-范围偏航">2. 范围偏航</a></h3>
+<p>范围偏航是功能越做越多。例如第一切片只做任务创建，但页面里出现员工配置、工具权限、审批流入口。</p>
+<p>处理方法：拿本版不做项逐条对照，越界内容删除或移到后续切片。</p>
+<h3 id="3-交互偏航"><a class="header" href="#3-交互偏航">3. 交互偏航</a></h3>
+<p>交互偏航是页面能用，但用户不知道怎么用。例如按钮文案含糊、空状态没有引导、点击后没有反馈。</p>
+<p>处理方法：回到页面预览，补用户路径和状态设计。</p>
+<h3 id="4-实现偏航"><a class="header" href="#4-实现偏航">4. 实现偏航</a></h3>
+<p>实现偏航是需求清楚但代码没做到。例如空输入不能提交已经写在验收清单里，但页面仍允许提交。</p>
+<p>处理方法：写实现返工单，给复现步骤和期望结果。</p>
+<h2 id="本章可复制诊断提示词"><a class="header" href="#本章可复制诊断提示词">本章可复制诊断提示词</a></h2>
+<pre><code class="language-text">请诊断我的 AI 开发过程是否已经偏航。
+项目原始目标：
+【粘贴】
+
+当前 AI 输出/实现：
+【粘贴】
+
+请按以下维度判断：
+1. 目标偏航；
+2. 范围偏航；
+3. 交互偏航；
+4. 实现偏航；
+5. 反馈太晚；
+6. 我当前最应该回到哪个检查点。
+
+要求：不要继续扩展方案，只做诊断和收敛建议。
+</code></pre>
+<h2 id="训练任务给自己的项目做一次偏航预演"><a class="header" href="#训练任务给自己的项目做一次偏航预演">训练任务：给自己的项目做一次偏航预演</a></h2>
+<p>即使你现在还没开始开发，也可以做一次“偏航预演”。问自己：</p>
+<ul>
+<li>如果我让 GPT 自由发挥，它最可能扩展哪些功能？</li>
+<li>哪些功能看起来有用，但第一版不该做？</li>
+<li>我最容易被哪类专业词带偏？</li>
+<li>我能不能写出第一版不做项？</li>
+</ul>
+<p>把答案写下来，你会更容易在后续开发中及时踩刹车。</p>
+<hr />
+<h1 id="v03-扩写把ai-开发偏航讲透"><a class="header" href="#v03-扩写把ai-开发偏航讲透">v0.3 扩写：把“AI 开发偏航”讲透</a></h1>
+<p>这一章的核心，不是批评 AI，也不是让读者害怕使用 AI，而是帮助读者看见一个事实：<strong>AI 越强，越容易让新手误以为自己已经控制住了开发过程。</strong></p>
+<p>传统开发里，一个新手不会轻易要求团队一次性做出完整系统，因为他知道自己没有能力管理那么多模块。可在 AI 协同开发里，GPT 可以在几分钟内生成几十页文档，Claude Code / Codex 可以在一个仓库里快速改出大量文件，这会制造一种“项目正在高速推进”的错觉。</p>
+<p>真正危险的地方在于：</p>
+<ul>
+<li>文档看起来完整，不代表边界清楚；</li>
+<li>代码生成得很快，不代表流程可用；</li>
+<li>页面做得很漂亮，不代表用户路径正确；</li>
+<li>模型能解释很多，不代表它理解了你的真实目标；</li>
+<li>你能让 AI 输出很多，不代表你能审查这些输出。</li>
+</ul>
+<h2 id="11-新手最常见的-5-种失控方式"><a class="header" href="#11-新手最常见的-5-种失控方式">1.1 新手最常见的 5 种失控方式</a></h2>
+<h3 id="失控方式一把想法误认为需求"><a class="header" href="#失控方式一把想法误认为需求">失控方式一：把“想法”误认为“需求”</a></h3>
+<p>很多人的第一句话是：</p>
+<pre><code class="language-text">我想做一个 AI 员工系统。
+</code></pre>
+<p>这句话只是一个想法，不是需求。想法通常方向感很强、细节很少、可解释空间很大。AI 最擅长填补空白。你只说“AI 员工”，它会自动想到员工画像、长期记忆、任务调度、工具权限、审计日志、工作台、审批流、复盘系统。每一个模块听起来都合理，但这些合理内容合在一起，就会变成新手无法审查的巨大工程。</p>
+<p>更稳的做法是先把想法降级成一句业务动作：</p>
+<pre><code class="language-text">我希望用户能输入一个任务，系统生成任务草案，用户确认后任务进入列表。
+</code></pre>
+<p>这句话还不是完整需求，但它已经比“AI 员工系统”更可控，因为它包含了用户、动作、结果。</p>
+<h3 id="失控方式二把完整文档误认为清晰文档"><a class="header" href="#失控方式二把完整文档误认为清晰文档">失控方式二：把“完整文档”误认为“清晰文档”</a></h3>
+<p>AI 生成完整文档很容易。它可以给你 PRD、架构图、数据库表、接口清单、前端页面、后端服务、测试计划、部署方案。问题是，新手通常没有足够审查带宽。你看见 40 份文档，会觉得“很专业”，但很难逐条判断：哪些是当前必须做的？哪些是以后再做的？哪些是 AI 脑补出来的？哪些会增加实现难度？哪些会影响第一版验收？</p>
+<p>因此，本书反复强调：<strong>开发早期不是文档越多越好，而是约束越清楚越好。</strong></p>
+<p>对于新手来说，第一阶段最有价值的文档不是大而全 PRD，而是：一页纸产品合同、第一切片定义、页面预览、施工任务单、验收清单。这五类材料能形成闭环。其他材料不是永远不要，而是不能太早展开。</p>
+<h3 id="失控方式三把能运行误认为能使用"><a class="header" href="#失控方式三把能运行误认为能使用">失控方式三：把“能运行”误认为“能使用”</a></h3>
+<p>很多 AI 生成的项目都能启动，也有页面，也能点击，但用户真正使用时会发现：不知道第一步该点哪里；表单字段太多；按钮文案不清楚；任务提交后状态不明；出错时不知道原因；页面有很多当前不需要的功能。</p>
+<p>这类问题不是代码不能运行，而是产品路径没有控制住。验收时不能只问“项目能不能跑起来”，还要问“用户能不能按预期完成这一条闭环”。</p>
+<p>在主案例里，第一切片不是“AI 员工系统能不能运行”，而是：</p>
+<pre><code class="language-text">用户能不能完成：输入任务 → 生成草案 → 编辑草案 → 确认创建 → 在列表看到待执行任务。
+</code></pre>
+<h3 id="失控方式四把模型建议误认为产品决策"><a class="header" href="#失控方式四把模型建议误认为产品决策">失控方式四：把“模型建议”误认为“产品决策”</a></h3>
+<p>GPT 经常会给出建议：增加员工配置、增加权限体系、增加风险等级、增加日志追踪、增加知识库、多角色协作。这些建议未必错，但它们不应该自动变成当前版本的开发范围。</p>
+<p>新手要建立一个意识：<strong>AI 可以提出建议，但产品决策必须由人确认。</strong></p>
+<p>每次 AI 提出新增功能时，你都要问：</p>
+<ol>
+<li>这个功能是否服务第一切片？</li>
+<li>没有它，第一切片是否仍能验收？</li>
+<li>加上它会不会增加不可控复杂度？</li>
+<li>它是否应该进入待办池，而不是当前施工单？</li>
+</ol>
+<p>如果答案是不确定，就先放入“后续待办”，不要进入当前切片。</p>
+<h3 id="失控方式五把返工误认为重新开始"><a class="header" href="#失控方式五把返工误认为重新开始">失控方式五：把“返工”误认为“重新开始”</a></h3>
+<p>AI 开发中出现偏差很正常。真正拉开差距的不是是否会偏，而是偏了之后能不能收回来。很多新手发现页面不对，就会对 coding agent 说：</p>
+<pre><code class="language-text">这个不对，重新做一下。
+</code></pre>
+<p>这句话会让 AI 再次发散。正确做法是基于验收项写返工单：</p>
+<pre><code class="language-text">请只修复验收项 2 和验收项 4 未通过的问题。
+不要新增页面，不要修改任务列表布局。
+当前问题：空输入仍可提交；确认创建后列表没有显示“待执行”状态。
+期望结果：空输入按钮禁用；确认创建后列表新增一条任务，状态为“待执行”。
+</code></pre>
+<p>返工不是情绪表达，而是一次有边界的小施工。</p>
+<h2 id="12-主案例一次典型偏航全过程"><a class="header" href="#12-主案例一次典型偏航全过程">1.2 主案例：一次典型偏航全过程</a></h2>
+<p>假设你对 GPT 说：</p>
+<pre><code class="language-text">我想做一个 AI 员工系统，能够给员工分配任务，员工自动执行，高风险操作要审批，请帮我完整设计。
+</code></pre>
+<p>GPT 可能会输出这样的目录：产品愿景、用户角色、AI 员工画像、任务系统、工具权限系统、审批系统、记忆系统、计划系统、执行器、日志审计、前端工作台、后端 API、数据库设计、部署方案、安全策略、商业化扩展。</p>
+<p>这套目录看起来很完整，但第一轮就存在三个风险。</p>
+<p>**风险一：主链路没有被提前验证。**你还没有验证用户到底是否愿意用这种方式创建任务、任务草案是否真的有帮助、任务列表如何承接状态、用户是否理解审批。如果这些没验证，先做记忆系统和工具权限，就是在不确定的地基上盖楼。</p>
+<p>**风险二：新手审查负担瞬间过载。**专业团队可以分工审查架构、接口、安全、权限、数据库。但本书读者很多是单人开发者、产品型用户、副业尝试者。他们真正能审查的是页面是否符合想法、流程是否顺、文案是否清楚、验收项是否通过。</p>
+<p>**风险三：coding agent 会沿着错误边界施工。**如果你把巨大文档丢给 Claude Code / Codex，它会尽力完成。问题是它不知道哪些是必须做，哪些是建议做，哪些是以后做。最后你发现页面跑起来了，但不知道哪些文件为什么改了，也不知道哪里出了问题。</p>
+<p>这就是“文档偏航 → 施工偏航 → 验收困难 → 返工失控”的连锁反应。</p>
+<h2 id="13-诊断你是否正在进入-ai-开发偏航"><a class="header" href="#13-诊断你是否正在进入-ai-开发偏航">1.3 诊断：你是否正在进入 AI 开发偏航</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>现象</th><th>说明</th><th style="text-align: right">风险等级</th><th>应对方式</th></tr></thead><tbody>
+<tr><td>GPT 一次输出超过 10 个模块</td><td>可能已经从闭环跳到系统架构</td><td style="text-align: right">高</td><td>要求重新压缩成最小闭环</td></tr>
+<tr><td>文档里出现大量你没提过的功能</td><td>AI 正在脑补</td><td style="text-align: right">高</td><td>标记为待确认，不进入施工</td></tr>
+<tr><td>你看不懂大部分架构说明</td><td>审查带宽不足</td><td style="text-align: right">高</td><td>回到页面预览和切片任务</td></tr>
+<tr><td>第一版没有明确验收清单</td><td>施工后无法判断好坏</td><td style="text-align: right">高</td><td>施工前补验收清单</td></tr>
+<tr><td>coding agent 改动了很多无关文件</td><td>施工边界不清</td><td style="text-align: right">中高</td><td>要求变更文件清单和回滚说明</td></tr>
+<tr><td>页面能跑但流程不顺</td><td>产品路径未验证</td><td style="text-align: right">中</td><td>做页面验收和返工单</td></tr>
+<tr><td>问题反馈只有“不好用”</td><td>返工不可执行</td><td style="text-align: right">中</td><td>改写为当前结果/期望结果</td></tr>
+</tbody></table>
+</div>
+<p>当你发现 3 条以上命中，就不要继续让 AI 写更多代码。应该暂停，回到产品合同、切片边界和验收清单。</p>
+<h2 id="14-错例与正例同一个需求的两种打开方式"><a class="header" href="#14-错例与正例同一个需求的两种打开方式">1.4 错例与正例：同一个需求的两种打开方式</a></h2>
+<h3 id="错误问法-1一次要完整系统"><a class="header" href="#错误问法-1一次要完整系统">错误问法 1：一次要完整系统</a></h3>
+<pre><code class="language-text">我要做一个 AI 员工系统，请帮我生成完整 PRD、架构设计、数据库设计、接口文档、前端页面和开发计划。
+</code></pre>
+<p>问题：范围过大；输出过多；AI 会自动补功能；没有第一切片；后续无法验收。</p>
+<p>改写：</p>
+<pre><code class="language-text">我想做一个 AI 员工系统。请不要生成完整系统文档。
+请先帮我识别 3 个最小可验证闭环，每个闭环只用一句话描述：用户动作、系统反馈、最终结果。
+最后推荐最适合作为第一切片的闭环，并说明理由。
+</code></pre>
+<h3 id="错误问法-2直接让-ai-写代码"><a class="header" href="#错误问法-2直接让-ai-写代码">错误问法 2：直接让 AI 写代码</a></h3>
+<pre><code class="language-text">帮我把这个系统做出来，技术栈你看着办。
+</code></pre>
+<p>问题：产品边界不清；技术选择不可控；无法判断改动是否合理；后续返工困难。</p>
+<p>改写：</p>
+<pre><code class="language-text">请只实现第一切片的前端静态可交互版本：用户输入任务，点击生成草案，编辑草案，确认后任务进入列表。
+使用 mock 数据，不接真实后端，不实现审批、权限、长期记忆和真实执行。
+完成后列出变更文件、运行方式、已知问题，并逐条对照验收清单。
+</code></pre>
+<h3 id="错误问法-3模糊返工"><a class="header" href="#错误问法-3模糊返工">错误问法 3：模糊返工</a></h3>
+<pre><code class="language-text">这个页面感觉不对，你优化一下。
+</code></pre>
+<p>问题：“不对”不可执行；“优化”没有边界；AI 可能重构无关代码；新问题可能更多。</p>
+<p>改写：</p>
+<pre><code class="language-text">请只修复任务创建页的 2 个问题，不要修改其他页面：
+1. 当前草案确认按钮在页面底部，用户容易忽略。期望放到草案卡片右下角。
+2. 当前空输入时仍可点击生成草案。期望输入为空时按钮禁用，并显示提示文案。
+修复后请说明修改了哪些文件，以及验收项 1、2 是否通过。
+</code></pre>
+<h2 id="15-新增模板ai-输出审查卡"><a class="header" href="#15-新增模板ai-输出审查卡">1.5 新增模板：AI 输出审查卡</a></h2>
+<pre><code class="language-markdown"># AI 输出审查卡
+
+## 1. 本轮原始目标
+我原本让 AI 做什么？
+
+## 2. AI 实际输出了什么
+列出输出中的主要模块：
+
+## 3. 是否越界
+- 明显属于本轮目标：
+- 可能相关但不确定：
+- 明显越界：
+
+## 4. 哪些内容可以进入当前切片
+
+## 5. 哪些内容放入后续待办
+
+## 6. 哪些内容直接删除
+
+## 7. 下一轮给 GPT 的修正提示词
+</code></pre>
+<p>主案例示例：</p>
+<pre><code class="language-markdown"># AI 输出审查卡
+
+## 1. 本轮原始目标
+识别 AI 员工系统的第一切片。
+
+## 2. AI 实际输出了什么
+输出了员工画像、权限系统、审批流、长期记忆、任务系统、日志系统、知识库等模块。
+
+## 3. 是否越界
+- 属于本轮目标：任务系统、任务创建、任务列表
+- 可能相关：审批流、风险等级
+- 明显越界：长期记忆、权限系统、知识库、团队管理
+
+## 4. 当前切片
+任务创建 → 草案确认 → 进入任务列表。
+
+## 5. 后续待办
+审批流、风险等级、执行日志。
+
+## 6. 删除
+团队管理、计费、复杂权限。
+
+## 7. 下一轮提示词
+请只围绕任务创建 → 草案确认 → 任务进入列表输出页面预览，不要展开审批、记忆、权限、团队管理。
+</code></pre>
+<h2 id="16-读者常见卡点"><a class="header" href="#16-读者常见卡点">1.6 读者常见卡点</a></h2>
+<h3 id="卡点一我怕切太小做出来没有价值"><a class="header" href="#卡点一我怕切太小做出来没有价值">卡点一：我怕切太小，做出来没有价值</a></h3>
+<p>切片小不等于价值小。一个好切片要验证关键路径，而不是堆功能。任务创建闭环虽然小，但它验证了用户是否能把任务交给 AI 员工，这是整个系统的入口。</p>
+<h3 id="卡点二我担心不提前设计架构后面会返工"><a class="header" href="#卡点二我担心不提前设计架构后面会返工">卡点二：我担心不提前设计架构，后面会返工</a></h3>
+<p>早期一定会返工。问题不是是否返工，而是返工成本是否可控。对新手来说，过早设计大架构更容易返工，因为你还没验证用户路径。</p>
+<h3 id="卡点三gpt-总是自动补很多内容怎么办"><a class="header" href="#卡点三gpt-总是自动补很多内容怎么办">卡点三：GPT 总是自动补很多内容怎么办</a></h3>
+<p>使用三句话约束：</p>
+<pre><code class="language-text">请只围绕当前切片工作。
+不要展开完整系统。
+不确定的内容放入待确认项，不要自行决定。
+</code></pre>
+<h2 id="17-本章扩写小结"><a class="header" href="#17-本章扩写小结">1.7 本章扩写小结</a></h2>
+<p>AI 开发失败，常常不是因为模型不会写，而是因为人没有建立检查点。检查点越晚，偏航越大；检查点越早，返工越小。</p>
+<p>从下一章开始，我们会把这种控制力具体化为“切片式开发”：不是把系统拆成一堆模块，而是拆成一段段能看、能跑、能验收的小闭环。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="00_前言.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="02_什么是切片式开发.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="00_前言.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="02_什么是切片式开发.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

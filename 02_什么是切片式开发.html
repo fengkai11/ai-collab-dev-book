@@ -1,0 +1,507 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 2 章：什么是切片式开发，为什么它比“大而全设计”更适合新手 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-2-章什么是切片式开发为什么它比大而全设计更适合新手"><a class="header" href="#第-2-章什么是切片式开发为什么它比大而全设计更适合新手">第 2 章：什么是切片式开发，为什么它比“大而全设计”更适合新手</a></h1>
+<blockquote>
+<p>版本：v0.1 全章初稿<br />
+本章定位：基础训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要理解切片不是把大任务拆小，而是拆出一段能跑通的业务闭环。一个好切片必须能看、能跑、能验收。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>切片式开发：围绕可验证闭环推进。</li>
+<li>纵向切片：从用户动作切到可见结果。</li>
+<li>横向拆分：按前端、后端、数据库等层拆。</li>
+<li>最小闭环：最短但完整的业务链路。</li>
+<li>可预览、可运行、可验收。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>切片不是小任务，而是小闭环。</li>
+<li>新手优先做纵向切片，不要横向铺满模块。</li>
+<li>好切片必须有用户动作和可见结果。</li>
+<li>切片越小，反馈越快，偏航越容易修。</li>
+<li>切片式开发不是降低目标，而是降低失控风险。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>AI 员工系统可拆为任务创建、审批、执行结果、员工配置等候选切片。第一切片优先选“任务创建 → 草案确认 → 进入列表”，因为它最靠近用户第一动作，最容易预览和验收。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">第一周做所有页面，第二周做所有接口，第三周做数据库，第四周联调。
+</code></pre>
+<p>这属于横向拆分。每层都有进度，但没有一条用户链路能完整跑通。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">第一切片：用户输入任务 → 生成草案 → 用户确认 → 任务进入列表。
+本切片不做真实执行、审批、长期记忆、多员工、复杂权限。
+</code></pre>
+<p>这是一条纵向切片，虽然小，但能验证核心入口。</p>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-找用户动作"><a class="header" href="#1-找用户动作">1. 找用户动作</a></h3>
+<p>好切片通常从用户动作开始，例如输入任务、上传文件、选择商品。</p>
+<h3 id="2-找可见终点"><a class="header" href="#2-找可见终点">2. 找可见终点</a></h3>
+<p>终点应该是用户看得见的结果，例如任务进入列表、客户清单生成。</p>
+<h3 id="3-用-mock-降低复杂度"><a class="header" href="#3-用-mock-降低复杂度">3. 用 mock 降低复杂度</a></h3>
+<p>真实 AI、真实后端、真实数据源都可以先 mock，先验证流程。</p>
+<h3 id="4-写不做项"><a class="header" href="#4-写不做项">4. 写不做项</a></h3>
+<p>不写不做项，AI 会默认可以扩展。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请从下面 4 个候选切片中选择最适合作为第一切片的一个：任务创建、审批、执行结果、员工配置。
+判断标准：用户可见价值、复杂度、是否容易预览、是否容易验收。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="切片候选清单模板"><a class="header" href="#切片候选清单模板">切片候选清单模板</a></h3>
+<p>用于比较多个候选切片。</p>
+<pre><code class="language-text">项目名称：
+候选切片A：
+起点：
+终点：
+用户可见价值：
+复杂度：
+是否容易预览：
+是否容易验收：
+
+推荐第一切片：
+理由：
+</code></pre>
+<h3 id="好切片判断表"><a class="header" href="#好切片判断表">好切片判断表</a></h3>
+<p>用于判断一个任务是否真的是切片。</p>
+<pre><code class="language-text">切片名称：
+有用户动作起点：是/否
+有可见终点：是/否
+能页面预览：是/否
+能运行或模拟：是/否
+能验收：是/否
+本版不做项明确：是/否
+综合判断：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1判断-8-个任务哪些是好切片"><a class="header" href="#练习-1判断-8-个任务哪些是好切片">练习 1：判断 8 个任务哪些是好切片。</a></h3>
+<h3 id="练习-2把横向开发计划改成-3-个纵向切片"><a class="header" href="#练习-2把横向开发计划改成-3-个纵向切片">练习 2：把横向开发计划改成 3 个纵向切片。</a></h3>
+<h3 id="练习-3为自己的项目写-3-个候选切片"><a class="header" href="#练习-3为自己的项目写-3-个候选切片">练习 3：为自己的项目写 3 个候选切片。</a></h3>
+<h3 id="练习-4选择第一切片并说明理由"><a class="header" href="#练习-4选择第一切片并说明理由">练习 4：选择第一切片并说明理由。</a></h3>
+<h3 id="练习-5写第一切片做不做边界"><a class="header" href="#练习-5写第一切片做不做边界">练习 5：写第一切片做/不做边界。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>好切片示例：用户上传文件并看到解析结果；用户输入任务并生成草案。不是好切片：设计完整数据库、搭建后端框架。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>可改为：任务创建切片、审批切片、执行结果切片。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>外贸项目可拆为：生成候选客户、客户画像评分、开发信草案。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>第一切片优先选用户价值最可见、复杂度最低、最容易验收的。</p>
+<h3 id="练习-5-参考"><a class="header" href="#练习-5-参考">练习 5 参考</a></h3>
+<p>做：输入、生成、确认、列表；不做：真实执行、权限、长期记忆。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+我的切片有起点。</li>
+<li><input disabled="" type="checkbox"/>
+我的切片有终点。</li>
+<li><input disabled="" type="checkbox"/>
+用户能看到结果。</li>
+<li><input disabled="" type="checkbox"/>
+我避免了只做数据库/接口这类横向任务。</li>
+<li><input disabled="" type="checkbox"/>
+我写了不做项。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区拆小就是切片"><a class="header" href="#误区拆小就是切片">误区：拆小就是切片</a></h3>
+<p>切片不是小任务，而是完整小链路。</p>
+<h3 id="误区第一切片必须很智能"><a class="header" href="#误区第一切片必须很智能">误区：第一切片必须很智能</a></h3>
+<p>第一切片可以 mock，先验证流程。</p>
+<h3 id="误区横向拆分更专业"><a class="header" href="#误区横向拆分更专业">误区：横向拆分更专业</a></h3>
+<p>对新手来说，横向拆分往往反馈太晚。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>切片式开发的核心是先跑通一条最小业务链路。它让新手把 AI 输出控制在可审查范围内。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章讲如何把模糊想法压缩成一页纸产品合同，为切片提供源头约束。</p>
+<h2 id="补充说明为什么纵向切片更适合-ai-协同开发"><a class="header" href="#补充说明为什么纵向切片更适合-ai-协同开发">补充说明：为什么纵向切片更适合 AI 协同开发</a></h2>
+<p>在传统团队里，横向拆分之所以可行，是因为团队中有人能统一把控架构，有人负责接口约定，有人负责联调，有人负责测试。但新手和 AI 协同开发时，通常没有这么多角色。你一个人既要提需求，又要审页面，又要让 coding agent 改代码，还要验收结果。</p>
+<p>这种情况下，横向拆分会把风险推迟到最后。前端做完时，你不知道后端能不能接；接口做完时，你不知道页面是否真的需要；数据库做完时，你不知道业务流程是否已经变了。</p>
+<p>纵向切片的好处是，每一次都围绕用户价值走一小段。你不需要判断全系统，只需要判断这一段是否成立。</p>
+<h2 id="切片大小的判断标准"><a class="header" href="#切片大小的判断标准">切片大小的判断标准</a></h2>
+<p>一个切片太大，通常有这些信号：</p>
+<ul>
+<li>描述里出现“完整”“全部”“所有”；</li>
+<li>需要同时接多个外部系统；</li>
+<li>需要复杂权限、长期记忆、任务队列、消息通知一起完成；</li>
+<li>验收项写不出来；</li>
+<li>页面预览超过 5 个核心页面；</li>
+<li>你解释给别人听需要超过 2 分钟。</li>
+</ul>
+<p>一个切片太小，也可能有问题：</p>
+<ul>
+<li>只有一个按钮，没有结果；</li>
+<li>只有数据库表，没有用户动作；</li>
+<li>只有页面静态布局，没有状态变化；</li>
+<li>做完后无法判断业务是否成立。</li>
+</ul>
+<p>好的第一切片通常介于两者之间：功能不多，但链路完整。</p>
+<h2 id="主案例切片序列建议"><a class="header" href="#主案例切片序列建议">主案例切片序列建议</a></h2>
+<p>AI 员工任务系统可以按下面序列推进：</p>
+<pre><code class="language-text">切片 1：任务创建与草案确认
+切片 2：高风险任务审批
+切片 3：任务执行结果展示
+切片 4：任务返工与满意度反馈
+切片 5：AI 员工基础配置
+切片 6：任务复盘和经验沉淀
+</code></pre>
+<p>注意这里没有一开始做员工配置。原因是配置需要真实任务来验证，否则你不知道哪些配置是真需求，哪些只是看起来专业。</p>
+<h2 id="切片命名规则"><a class="header" href="#切片命名规则">切片命名规则</a></h2>
+<p>好的切片名称最好包含动作和结果：</p>
+<ul>
+<li>好：创建任务并进入列表；</li>
+<li>差：任务模块；</li>
+<li>好：生成候选客户并标记跟进；</li>
+<li>差：客户管理；</li>
+<li>好：上传试卷并生成错题清单；</li>
+<li>差：学习系统。</li>
+</ul>
+<p>名称越具体，越不容易发散。</p>
+<hr />
+<h1 id="v03-扩写切片不是拆任务而是拆闭环"><a class="header" href="#v03-扩写切片不是拆任务而是拆闭环">v0.3 扩写：切片不是拆任务，而是拆闭环</a></h1>
+<p>很多新手第一次听到“切片式开发”，会自然理解成“把大任务拆小”。这个理解只对了一半。真正重要的不是“小”，而是“闭环”。</p>
+<p>一个任务可以很小，但不是好切片。例如：</p>
+<pre><code class="language-text">先建数据库表。
+</code></pre>
+<p>这确实很小，但用户看不见，也无法单独验证业务价值。它只是一个横向技术任务。</p>
+<p>一个切片也可以包含前端、状态、mock 数据、简单交互，看起来涉及多个层面，但只要它围绕一条用户路径形成闭环，它就是好切片。例如：</p>
+<pre><code class="language-text">用户输入任务 → 系统生成草案 → 用户确认 → 任务进入列表。
+</code></pre>
+<p>它可能需要页面、按钮、状态、列表渲染，但用户能走完，产品能验收，后续能接真实后端。这就是纵向切片。</p>
+<h2 id="21-横向拆分为什么容易坑新手"><a class="header" href="#21-横向拆分为什么容易坑新手">2.1 横向拆分为什么容易坑新手</a></h2>
+<p>传统技术拆分经常按层划分：前端页面、后端接口、数据库、权限、测试、部署。这种拆法对成熟团队很自然，因为团队里有人分别负责不同层，并且有架构师保证整体一致。但新手用 AI 协同开发时，按层拆分会遇到三个问题。</p>
+<h3 id="问题一每一层都做了一点但没有功能能用"><a class="header" href="#问题一每一层都做了一点但没有功能能用">问题一：每一层都做了一点，但没有功能能用</a></h3>
+<p>如果第一周做完数据库，第二周做完接口，第三周做完页面，第四周才联调，你要等很久才知道需求有没有错。AI 开发的优势是反馈快。如果你用横向拆分把反馈推迟，就浪费了 AI 的最大优势。</p>
+<h3 id="问题二你无法审查中间产物"><a class="header" href="#问题二你无法审查中间产物">问题二：你无法审查中间产物</a></h3>
+<p>数据库表是否设计合理？接口是否 RESTful？状态管理是否优雅？这些问题对新手不友好。你可能只能觉得“看起来专业”。但页面路径、按钮文案、列表状态、错误提示，你能审查。切片式开发就是优先制造你能审查的产物。</p>
+<h3 id="问题三早期技术决策会锁死错误方向"><a class="header" href="#问题三早期技术决策会锁死错误方向">问题三：早期技术决策会锁死错误方向</a></h3>
+<p>当用户路径还没确认时，提前设计复杂后端，会让后续修改变重。你可能只是想把“处理中”改成“待执行”，但因为状态机、接口、数据库都已经铺开，改动变得复杂。</p>
+<h2 id="22-什么是纵向切片"><a class="header" href="#22-什么是纵向切片">2.2 什么是纵向切片</a></h2>
+<p>纵向切片不是只做前端，也不是只做假数据。它的核心是：<strong>沿着一条用户路径，从入口到结果，做出一个可运行、可观察、可验收的小版本。</strong></p>
+<p>一个好纵向切片通常包含：</p>
+<ol>
+<li>用户入口：用户从哪里开始；</li>
+<li>核心动作：用户做什么；</li>
+<li>系统反馈：系统给出什么响应；</li>
+<li>状态变化：数据或页面如何变化；</li>
+<li>终点结果：用户看到什么结果；</li>
+<li>验收标准：如何判断成功。</li>
+</ol>
+<p>以主案例为例：</p>
+<div class="table-wrapper"><table><thead><tr><th>元素</th><th>内容</th></tr></thead><tbody>
+<tr><td>用户入口</td><td>任务创建页</td></tr>
+<tr><td>核心动作</td><td>输入任务描述，点击生成草案</td></tr>
+<tr><td>系统反馈</td><td>显示任务草案</td></tr>
+<tr><td>状态变化</td><td>用户确认后，任务加入列表</td></tr>
+<tr><td>终点结果</td><td>列表出现一条“待执行”任务</td></tr>
+<tr><td>验收标准</td><td>空输入不能提交，草案可编辑，确认后列表更新</td></tr>
+</tbody></table>
+</div>
+<p>这就是第一切片的骨架。</p>
+<h2 id="23-一个好切片的-6-个判断标准"><a class="header" href="#23-一个好切片的-6-个判断标准">2.3 一个好切片的 6 个判断标准</a></h2>
+<h3 id="标准一能看见"><a class="header" href="#标准一能看见">标准一：能看见</a></h3>
+<p>用户或产品负责人能在页面上看到结果。如果一个切片做完后只能在代码里看变化，对新手就不友好。</p>
+<h3 id="标准二能操作"><a class="header" href="#标准二能操作">标准二：能操作</a></h3>
+<p>用户能执行动作，不是只看静态页面。至少要能输入、点击、确认、取消、查看状态。</p>
+<h3 id="标准三能验收"><a class="header" href="#标准三能验收">标准三：能验收</a></h3>
+<p>必须能写出通过/不通过的验收项。例如“输入为空时，生成草案按钮不可点击”。这比“交互要友好”更可验收。</p>
+<h3 id="标准四边界清楚"><a class="header" href="#标准四边界清楚">标准四：边界清楚</a></h3>
+<p>切片必须写明“不做什么”。例如第一切片不做真实 agent 执行、不做长期记忆、不做多员工调度。</p>
+<h3 id="标准五能接下一片"><a class="header" href="#标准五能接下一片">标准五：能接下一片</a></h3>
+<p>第一切片做完后，应该自然接第二切片。任务创建闭环之后，可以接审批切片；审批之后，可以接执行结果切片。</p>
+<h3 id="标准六风险可控"><a class="header" href="#标准六风险可控">标准六：风险可控</a></h3>
+<p>如果做错了，能小范围返工，而不是推倒整个系统。</p>
+<h2 id="24-主案例为什么不先做员工配置"><a class="header" href="#24-主案例为什么不先做员工配置">2.4 主案例：为什么不先做“员工配置”</a></h2>
+<p>很多人会觉得，既然是 AI 员工系统，第一步应该先设置 AI 员工：员工名称、职责、工具权限、记忆范围、风险等级、工作时间、汇报方式。这些都合理，但不适合作为第一切片。</p>
+<p>原因有三点：</p>
+<ol>
+<li>**用户价值不直接。**配置员工是为了让员工执行任务。如果任务创建闭环还没跑通，配置员工的价值无法验证。</li>
+<li>**字段会无限膨胀。**一旦开始做员工配置，AI 很容易扩展出权限、角色、技能、知识库、工具市场、审批策略。</li>
+<li><strong>验收难度高。</strong>“员工职责配置是否合理”很难在第一版验收。但“任务能否创建并进入列表”很容易验收。</li>
+</ol>
+<p>因此，第一切片选择任务创建，而不是员工配置。</p>
+<h2 id="25-候选切片打分示例"><a class="header" href="#25-候选切片打分示例">2.5 候选切片打分示例</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>候选切片</th><th style="text-align: right">用户可见性</th><th style="text-align: right">验收难度</th><th style="text-align: right">实现复杂度</th><th style="text-align: right">后续承接</th><th>是否适合第一片</th></tr></thead><tbody>
+<tr><td>任务创建 → 草案确认 → 入列表</td><td style="text-align: right">高</td><td style="text-align: right">低</td><td style="text-align: right">低</td><td style="text-align: right">高</td><td>适合</td></tr>
+<tr><td>高风险审批</td><td style="text-align: right">中</td><td style="text-align: right">中</td><td style="text-align: right">中</td><td style="text-align: right">高</td><td>第二片更合适</td></tr>
+<tr><td>执行结果展示</td><td style="text-align: right">中</td><td style="text-align: right">中</td><td style="text-align: right">中</td><td style="text-align: right">中</td><td>等任务存在后再做</td></tr>
+<tr><td>员工配置</td><td style="text-align: right">中</td><td style="text-align: right">高</td><td style="text-align: right">高</td><td style="text-align: right">中</td><td>不适合作为第一片</td></tr>
+<tr><td>长期记忆</td><td style="text-align: right">低</td><td style="text-align: right">高</td><td style="text-align: right">高</td><td style="text-align: right">中</td><td>暂不做</td></tr>
+</tbody></table>
+</div>
+<p>这个表不是为了追求数学精确，而是帮助你把“感觉”变成讨论依据。</p>
+<h2 id="26-切片候选清单模板扩写"><a class="header" href="#26-切片候选清单模板扩写">2.6 切片候选清单模板扩写</a></h2>
+<h3 id="字段解释"><a class="header" href="#字段解释">字段解释</a></h3>
+<ul>
+<li>候选切片名称：用一句短语命名；</li>
+<li>起点动作：用户第一步做什么；</li>
+<li>终点结果：用户最后看到什么；</li>
+<li>用户可见价值：为什么用户会觉得有用；</li>
+<li>本片做什么：明确范围；</li>
+<li>本片不做什么：防止扩张；</li>
+<li>主要风险：可能卡在哪里；</li>
+<li>验收方式：如何判断做完。</li>
+</ul>
+<h3 id="空白模板"><a class="header" href="#空白模板">空白模板</a></h3>
+<pre><code class="language-markdown"># 切片候选清单
+
+## 候选切片 1
+- 名称：
+- 起点动作：
+- 终点结果：
+- 用户可见价值：
+- 本片做什么：
+- 本片不做什么：
+- 主要风险：
+- 验收方式：
+
+## 候选切片 2
+...
+</code></pre>
+<h3 id="主案例填充"><a class="header" href="#主案例填充">主案例填充</a></h3>
+<pre><code class="language-markdown">## 候选切片 1
+- 名称：任务创建与草案确认
+- 起点动作：用户输入任务描述
+- 终点结果：任务进入列表，状态为“待执行”
+- 用户可见价值：用户第一次感受到可以把任务交给 AI 员工
+- 本片做什么：任务输入、草案生成、草案编辑、确认入列表
+- 本片不做什么：真实执行、审批、权限、长期记忆
+- 主要风险：草案内容不符合预期；状态文案不清楚
+- 验收方式：按创建流程逐步测试
+</code></pre>
+<h2 id="27-练习扩展把横向任务改成纵向切片"><a class="header" href="#27-练习扩展把横向任务改成纵向切片">2.7 练习扩展：把横向任务改成纵向切片</a></h2>
+<p>题目：</p>
+<pre><code class="language-text">第 1 周做所有页面；第 2 周做所有接口；第 3 周做数据库；第 4 周接 AI；第 5 周测试。
+</code></pre>
+<p>参考答案：</p>
+<pre><code class="language-text">切片 1：任务创建闭环
+用户输入任务 → 生成草案 → 编辑确认 → 进入任务列表。使用 mock 数据，不接真实后端。
+
+切片 2：审批闭环
+高风险任务 → 触发审批弹窗 → 用户同意/拒绝 → 任务状态更新。
+
+切片 3：执行结果闭环
+待执行任务 → 模拟执行 → 展示执行结果 → 用户确认满意/重新执行。
+</code></pre>
+<p>解释：这三个切片每个都能独立演示、验收和返工。它们不是按技术层拆，而是按用户价值链路拆。</p>
+<h2 id="28-卡住时怎么问-gpt"><a class="header" href="#28-卡住时怎么问-gpt">2.8 卡住时怎么问 GPT</a></h2>
+<p>当你不知道怎么切时，可以这样问：</p>
+<pre><code class="language-text">我有一个产品想法：{写下你的想法}。
+请不要展开完整系统。
+请帮我列出 5 个候选纵向切片，每个切片必须包含：用户起点动作、系统反馈、终点结果、可验收标准。
+然后按“用户可见价值、实现复杂度、验收难度、后续承接”给出推荐排序。
+</code></pre>
+<p>当你担心切得太大时，可以这样问：</p>
+<pre><code class="language-text">请审查下面这个切片是否过大。
+如果过大，请拆成 2–3 个更小的纵向切片。
+注意：每个切片都必须能看、能操作、能验收。
+</code></pre>
+<h2 id="29-本章扩写小结"><a class="header" href="#29-本章扩写小结">2.9 本章扩写小结</a></h2>
+<p>切片式开发的重点不是“少做”，而是“先做能验证方向的那一段”。你不是放弃完整系统，而是拒绝在没有验证入口闭环之前，把精力投入到庞大的架构和模块中。</p>
+<p>下一章会进一步把切片的源头约束写成“一页纸产品合同”，让 AI 和你都围绕同一个小目标工作。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="01_为什么很多人用AI开发最后做出来却不好用.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="03_一页纸产品合同.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="01_为什么很多人用AI开发最后做出来却不好用.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="03_一页纸产品合同.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

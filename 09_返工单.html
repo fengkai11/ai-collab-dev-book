@@ -1,0 +1,893 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 9 章：如何写返工单，判断该返工产品还是返工实现 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-9-章如何写返工单判断该返工产品还是返工实现"><a class="header" href="#第-9-章如何写返工单判断该返工产品还是返工实现">第 9 章：如何写返工单，判断该返工产品还是返工实现</a></h1>
+<blockquote>
+<p>版本：v0.2 核心训练扩写版<br />
+本章定位：核心训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要学会把“感觉不对”变成 coding agent 能执行的返工任务，并判断问题到底该改产品定义还是改代码。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>产品返工：目标、流程、交互、文案需要改。</li>
+<li>实现返工：需求明确但代码没做到。</li>
+<li>复现步骤：让别人重复看到问题。</li>
+<li>当前结果：系统实际表现。</li>
+<li>期望结果：你希望的表现。</li>
+<li>修改范围：本次允许改哪里。</li>
+<li>返工复验：修完后重新检查。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>返工不是重新做，而是最小修正。</li>
+<li>产品返工和实现返工要分开。</li>
+<li>不好用不是返工单。</li>
+<li>返工也要写做/不做边界。</li>
+<li>每次返工后必须复验相关项。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>模拟问题：确认按钮位置不明显；空输入仍可提交；状态文案显示处理中而不是待执行；coding agent 自行加入员工配置页。分别判断为产品/交互、实现、实现或需求未定义、越界实现。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">这个页面不好用，你优化一下。
+</code></pre>
+<p>这会导致 AI 随机优化，甚至改动无关页面。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">请只修复以下 3 个问题，不要新增功能，不要改无关页面：1. 空输入时按钮应禁用；2. 确认按钮放到草案卡片右下角；3. 初始状态文案应为待执行。修复后对照验收项说明是否通过。
+</code></pre>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-从验收失败项开始"><a class="header" href="#1-从验收失败项开始">1. 从验收失败项开始</a></h3>
+<p>返工单最好来自验收记录。</p>
+<h3 id="2-写复现步骤"><a class="header" href="#2-写复现步骤">2. 写复现步骤</a></h3>
+<p>例如打开页面、不输入、点击生成。</p>
+<h3 id="3-写当前结果"><a class="header" href="#3-写当前结果">3. 写当前结果</a></h3>
+<p>按钮可点击并生成空草案。</p>
+<h3 id="4-写期望结果"><a class="header" href="#4-写期望结果">4. 写期望结果</a></h3>
+<p>按钮应禁用，不能生成草案。</p>
+<h3 id="5-判断问题类型"><a class="header" href="#5-判断问题类型">5. 判断问题类型</a></h3>
+<p>需求未定义先产品返工，需求清楚但没做到才实现返工。</p>
+<h3 id="6-限定修改范围"><a class="header" href="#6-限定修改范围">6. 限定修改范围</a></h3>
+<p>只改任务创建页，不改权限、审批、路由。</p>
+<h3 id="7-要求复验"><a class="header" href="#7-要求复验">7. 要求复验</a></h3>
+<p>修复后说明相关验收项是否通过。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请把下面的问题清单整理成 coding agent 可执行的返工单。每个问题包含复现步骤、当前结果、期望结果、问题类型、修改范围和返工后复验项。不要新增功能。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="返工单模板"><a class="header" href="#返工单模板">返工单模板</a></h3>
+<p>用于把问题交给 coding agent 修。</p>
+<pre><code class="language-text">关联切片：
+返工目标：
+本次不允许新增：
+
+问题1：
+复现步骤：
+当前结果：
+期望结果：
+问题类型：
+修改要求：
+
+修改范围：
+允许修改：
+不允许修改：
+
+返工后复验项：
+</code></pre>
+<h3 id="产品返工-vs-实现返工判断表"><a class="header" href="#产品返工-vs-实现返工判断表">产品返工 vs 实现返工判断表</a></h3>
+<p>用于分类问题。</p>
+<pre><code class="language-text">问题描述：
+产品合同是否定义：
+页面预览是否定义：
+验收清单是否定义：
+代码是否按定义实现：
+判断：产品返工/实现返工/需求未定义/越界实现
+理由：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1判断-10-个问题属于产品返工还是实现返工"><a class="header" href="#练习-1判断-10-个问题属于产品返工还是实现返工">练习 1：判断 10 个问题属于产品返工还是实现返工。</a></h3>
+<h3 id="练习-2把页面不好用改成返工单"><a class="header" href="#练习-2把页面不好用改成返工单">练习 2：把“页面不好用”改成返工单。</a></h3>
+<h3 id="练习-3为空输入仍可提交写复现步骤"><a class="header" href="#练习-3为空输入仍可提交写复现步骤">练习 3：为空输入仍可提交写复现步骤。</a></h3>
+<h3 id="练习-4为状态文案错误写期望结果"><a class="header" href="#练习-4为状态文案错误写期望结果">练习 4：为状态文案错误写期望结果。</a></h3>
+<h3 id="练习-5限定返工范围"><a class="header" href="#练习-5限定返工范围">练习 5：限定返工范围。</a></h3>
+<h3 id="练习-6写主案例返工单"><a class="header" href="#练习-6写主案例返工单">练习 6：写主案例返工单。</a></h3>
+<h3 id="练习-7为自己的项目写返工单"><a class="header" href="#练习-7为自己的项目写返工单">练习 7：为自己的项目写返工单。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>空输入仍可提交是实现返工；用户不知道下一步是产品返工；员工配置页是越界实现。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>改成：成功提示缺失、按钮位置不明显、空状态缺少引导。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>打开页面→不输入→点击生成→观察是否生成空草案。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>确认创建后状态应显示待执行。</p>
+<h3 id="练习-5-参考"><a class="header" href="#练习-5-参考">练习 5 参考</a></h3>
+<p>不允许改审批、权限、员工配置、全局路由、无关页面。</p>
+<h3 id="练习-6-参考"><a class="header" href="#练习-6-参考">练习 6 参考</a></h3>
+<p>参考本章正确示范。</p>
+<h3 id="练习-7-参考"><a class="header" href="#练习-7-参考">练习 7 参考</a></h3>
+<p>自己的返工单也要包含复现、当前、期望、范围、复验。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+返工单来自验收记录。</li>
+<li><input disabled="" type="checkbox"/>
+写了复现步骤。</li>
+<li><input disabled="" type="checkbox"/>
+写了当前和期望。</li>
+<li><input disabled="" type="checkbox"/>
+判断了产品/实现。</li>
+<li><input disabled="" type="checkbox"/>
+限定修改范围。</li>
+<li><input disabled="" type="checkbox"/>
+禁止无关改动。</li>
+<li><input disabled="" type="checkbox"/>
+写了复验项。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区返工就是重新做"><a class="header" href="#误区返工就是重新做">误区：返工就是重新做</a></h3>
+<p>返工是最小修正。</p>
+<h3 id="误区模糊反馈能让-ai-理解"><a class="header" href="#误区模糊反馈能让-ai-理解">误区：模糊反馈能让 AI 理解</a></h3>
+<p>AI 会猜，但猜的不一定对。</p>
+<h3 id="误区返工时加入新需求"><a class="header" href="#误区返工时加入新需求">误区：返工时加入新需求</a></h3>
+<p>新需求应进入下一切片。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>返工能力决定 AI 协同开发能否持续推进。你要把“不好用”拆成可复现、可判断、可修复的问题。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章把前面的流程固化成个人 AI 协同开发工作流。</p>
+<h2 id="返工单要避免二次发散"><a class="header" href="#返工单要避免二次发散">返工单要避免“二次发散”</a></h2>
+<p>返工阶段最容易出现二次发散。原因是你已经看到了一些问题，情绪上会想“干脆一起优化”。但这样会让返工变成新一轮大开发。正确做法是：一个返工单只修验收失败相关问题。</p>
+<p>如果你发现了新想法，先写到“下一切片候选”，不要塞进本次返工。</p>
+<h2 id="返工单中的范围限制示例"><a class="header" href="#返工单中的范围限制示例">返工单中的范围限制示例</a></h2>
+<pre><code class="language-text">允许修改：
+- 任务创建页；
+- 草案确认组件；
+- 任务列表组件；
+- 与上述组件直接相关的本地状态逻辑。
+
+不允许修改：
+- 路由结构；
+- 全局布局；
+- 登录注册；
+- 权限相关文件；
+- 审批页面；
+- 员工配置页面；
+- 与第一切片无关的样式系统。
+</code></pre>
+<p>这类范围限制能显著减少 coding agent 顺手重构。</p>
+<h2 id="产品返工示例"><a class="header" href="#产品返工示例">产品返工示例</a></h2>
+<p>问题：用户生成草案后，不知道是否还可以编辑。<br />
+原因：页面预览没有说明草案字段是可编辑的，也没有编辑态样式。<br />
+处理：先修改页面预览和验收标准，再施工。</p>
+<p>返工单：</p>
+<pre><code class="language-text">请调整草案确认区交互：
+1. 草案字段应以可编辑输入框形式展示；
+2. 每个字段旁不需要单独编辑按钮；
+3. 确认创建前用户可以修改标题、目标、交付物；
+4. 不改任务列表，不新增审批。
+</code></pre>
+<h2 id="实现返工示例"><a class="header" href="#实现返工示例">实现返工示例</a></h2>
+<p>问题：产品合同和验收清单都要求空输入禁用，但实现中按钮仍可点击。<br />
+处理：直接实现返工。</p>
+<p>返工单：</p>
+<pre><code class="language-text">修复空输入提交问题。
+复现步骤：打开页面，不输入内容，点击生成任务草案。
+当前结果：按钮可点击并生成空草案。
+期望结果：输入为空时按钮禁用，不能触发生成。
+只修改任务输入区相关逻辑，不改其他页面。
+</code></pre>
+<h2 id="越界实现处理"><a class="header" href="#越界实现处理">越界实现处理</a></h2>
+<p>如果 coding agent 自行加入了员工配置页，不要说“这个也挺好，先留着”。第一切片阶段，越界内容会干扰验收。你可以选择：</p>
+<ol>
+<li>删除；</li>
+<li>隐藏；</li>
+<li>移到后续分支；</li>
+<li>记录到下一切片候选。</li>
+</ol>
+<p>返工话术：</p>
+<pre><code class="language-text">本次第一切片不包含员工配置页。请移除页面入口和相关展示，不要继续实现配置功能。如果相关文件已新增，请在变更说明中列出，并说明是否删除或保留为未引用文件。
+</code></pre>
+<h2 id="返工后复验规则"><a class="header" href="#返工后复验规则">返工后复验规则</a></h2>
+<p>返工后不要全量乱测，先复验相关项，再做一次核心链路冒烟测试。</p>
+<pre><code class="language-text">1. 复验返工相关验收项；
+2. 走一遍正常主流程；
+3. 检查是否引入越界功能；
+4. 记录是否通过；
+5. 如果失败，再写下一张返工单。
+</code></pre>
+<h2 id="返工提示词增强版"><a class="header" href="#返工提示词增强版">返工提示词增强版</a></h2>
+<pre><code class="language-text">你是 coding agent。请只执行下面返工单，不要新增功能，不要顺手优化。
+如果你认为需要改动无关文件，必须先说明原因。
+返工完成后，请逐条说明复验项是否通过，并列出所有变更文件。
+【粘贴返工单】
+</code></pre>
+<hr />
+<h1 id="v02-核心训练扩写把感觉不对变成可执行返工单"><a class="header" href="#v02-核心训练扩写把感觉不对变成可执行返工单">v0.2 核心训练扩写：把“感觉不对”变成可执行返工单</a></h1>
+<blockquote>
+<p>本节扩写第 9 章。目标是让读者学会把验收失败项变成 coding agent 能准确修复的返工任务。</p>
+</blockquote>
+<h2 id="91-返工不是重做而是最小修正"><a class="header" href="#91-返工不是重做而是最小修正">9.1 返工不是重做，而是最小修正</a></h2>
+<p>很多新手发现 AI 写出来的东西不对时，会直接说：</p>
+<pre><code class="language-text">不对，重写一下。
+</code></pre>
+<p>或者：</p>
+<pre><code class="language-text">这个页面不好用，优化一下。
+</code></pre>
+<p>这两句话都会让返工失控。</p>
+<p>返工的目标不是让 coding agent 重新发挥一次，而是针对已经发现的问题做最小修正。</p>
+<p>返工单要回答：</p>
+<ol>
+<li>哪个验收项没通过？</li>
+<li>如何复现？</li>
+<li>当前结果是什么？</li>
+<li>期望结果是什么？</li>
+<li>只允许改哪里？</li>
+<li>不允许顺手改哪里？</li>
+<li>修完后复验哪些项？</li>
+</ol>
+<p>如果这些问题没写清，返工很容易引入新问题。</p>
+<h2 id="92-产品返工和实现返工必须分开"><a class="header" href="#92-产品返工和实现返工必须分开">9.2 产品返工和实现返工必须分开</a></h2>
+<p>这是第 9 章最重要的判断。</p>
+<h3 id="实现返工"><a class="header" href="#实现返工">实现返工</a></h3>
+<p>实现返工指：产品合同、施工单或验收清单已经写清楚，但 coding agent 没做到。</p>
+<p>例子：</p>
+<pre><code class="language-text">验收标准写了：空输入不能生成草案。
+实际结果：空输入仍然生成草案。
+</code></pre>
+<p>这就是实现返工。</p>
+<h3 id="产品返工"><a class="header" href="#产品返工">产品返工</a></h3>
+<p>产品返工指：原来的产品定义不清、交互设计不合理、字段设计不完整，需要你重新定义产品规则。</p>
+<p>例子：</p>
+<pre><code class="language-text">草案确认按钮应该放在哪里，之前没有定义。现在发现用户不容易看到。
+</code></pre>
+<p>这更接近产品返工。你要先决定按钮位置和交互规则，再让 coding agent 修改。</p>
+<h3 id="待确认问题"><a class="header" href="#待确认问题">待确认问题</a></h3>
+<p>有些问题暂时不能直接归类。</p>
+<p>例子：</p>
+<pre><code class="language-text">风险等级默认是低、中、高，还是只显示是否高风险？
+</code></pre>
+<p>这属于待确认。不能让 coding agent 自己决定。</p>
+<h2 id="93-主案例问题分类"><a class="header" href="#93-主案例问题分类">9.3 主案例问题分类</a></h2>
+<p>假设第 8 章验收后发现 4 个问题。</p>
+<h3 id="问题-a确认按钮不明显"><a class="header" href="#问题-a确认按钮不明显">问题 A：确认按钮不明显</a></h3>
+<pre><code class="language-text">当前结果：生成草案后，确认创建按钮在页面底部，用户需要滚动才能看到。
+期望结果：确认创建按钮应该位于草案卡片右下角。
+</code></pre>
+<p>分类：产品 / 交互返工。</p>
+<p>原因：按钮位置属于交互决策。如果之前页面预览没写清，需要先补充产品定义。</p>
+<h3 id="问题-b空输入仍可提交"><a class="header" href="#问题-b空输入仍可提交">问题 B：空输入仍可提交</a></h3>
+<pre><code class="language-text">当前结果：输入框为空时点击生成草案，系统生成了空草案。
+期望结果：空输入时按钮禁用或提示请输入任务描述。
+</code></pre>
+<p>分类：实现返工。</p>
+<p>原因：验收清单已明确要求空输入不能生成草案。</p>
+<h3 id="问题-c任务状态显示为处理中"><a class="header" href="#问题-c任务状态显示为处理中">问题 C：任务状态显示为“处理中”</a></h3>
+<pre><code class="language-text">当前结果：确认后任务状态显示为处理中。
+期望结果：状态应为待执行。
+</code></pre>
+<p>分类：实现返工。</p>
+<p>原因：施工单明确写了初始状态为“待执行”。</p>
+<h3 id="问题-d多了员工配置页"><a class="header" href="#问题-d多了员工配置页">问题 D：多了员工配置页</a></h3>
+<pre><code class="language-text">当前结果：页面出现员工配置入口。
+期望结果：本切片不出现员工配置。
+</code></pre>
+<p>分类：越界实现，需要返工删除或隔离。</p>
+<p>原因：施工单明确不做员工配置。</p>
+<h2 id="94-三组错误返工-vs-正确返工"><a class="header" href="#94-三组错误返工-vs-正确返工">9.4 三组错误返工 vs 正确返工</a></h2>
+<h3 id="组-1模糊反馈"><a class="header" href="#组-1模糊反馈">组 1：模糊反馈</a></h3>
+<p>错误返工：</p>
+<pre><code class="language-text">这个页面不好用，你优化一下。
+</code></pre>
+<p>正确返工：</p>
+<pre><code class="language-text">请只修复确认按钮不明显的问题。
+当前结果：生成草案后，确认创建按钮位于页面底部，用户需要滚动才能看到。
+期望结果：确认创建按钮放在草案卡片右下角，并使用主按钮样式。
+不允许改动：不要修改任务列表、草案字段、页面路由和其他功能。
+复验项：草案生成后能看到确认按钮；点击确认后任务仍能进入列表。
+</code></pre>
+<h3 id="组-2要求整体重做"><a class="header" href="#组-2要求整体重做">组 2：要求整体重做</a></h3>
+<p>错误返工：</p>
+<pre><code class="language-text">这个实现不符合预期，重新做任务创建功能。
+</code></pre>
+<p>正确返工：</p>
+<pre><code class="language-text">请只修复以下两个实现偏差：
+1. 空输入时仍可生成草案。
+2. 确认后状态显示为“处理中”，应改为“待执行”。
+不要重构页面，不要改动草案字段，不要新增功能。
+</code></pre>
+<h3 id="组-3顺手扩展"><a class="header" href="#组-3顺手扩展">组 3：顺手扩展</a></h3>
+<p>错误返工：</p>
+<pre><code class="language-text">顺便把审批功能也加上。
+</code></pre>
+<p>正确返工：</p>
+<pre><code class="language-text">本次返工只修复第一切片问题，不新增审批功能。审批功能放入下一切片计划。
+</code></pre>
+<h2 id="95-返工单的-10-个字段"><a class="header" href="#95-返工单的-10-个字段">9.5 返工单的 10 个字段</a></h2>
+<h3 id="字段-1返工标题"><a class="header" href="#字段-1返工标题">字段 1：返工标题</a></h3>
+<p>短而明确。例如：</p>
+<pre><code class="language-text">修复空输入仍可生成草案的问题
+</code></pre>
+<h3 id="字段-2关联验收项"><a class="header" href="#字段-2关联验收项">字段 2：关联验收项</a></h3>
+<p>来自第 8 章验收清单。方便追踪。</p>
+<h3 id="字段-3问题类型"><a class="header" href="#字段-3问题类型">字段 3：问题类型</a></h3>
+<p>产品返工 / 实现返工 / 越界实现 / 待确认。</p>
+<h3 id="字段-4复现步骤"><a class="header" href="#字段-4复现步骤">字段 4：复现步骤</a></h3>
+<p>告诉 coding agent 如何看到问题。</p>
+<h3 id="字段-5当前结果"><a class="header" href="#字段-5当前结果">字段 5：当前结果</a></h3>
+<p>现在发生了什么。</p>
+<h3 id="字段-6期望结果"><a class="header" href="#字段-6期望结果">字段 6：期望结果</a></h3>
+<p>应该发生什么。</p>
+<h3 id="字段-7修改范围"><a class="header" href="#字段-7修改范围">字段 7：修改范围</a></h3>
+<p>允许改哪里。</p>
+<h3 id="字段-8不允许改动"><a class="header" href="#字段-8不允许改动">字段 8：不允许改动</a></h3>
+<p>防止返工引发新偏航。</p>
+<h3 id="字段-9复验清单"><a class="header" href="#字段-9复验清单">字段 9：复验清单</a></h3>
+<p>修完后检查哪些项。</p>
+<h3 id="字段-10完成后汇报"><a class="header" href="#字段-10完成后汇报">字段 10：完成后汇报</a></h3>
+<p>要求说明改了哪些文件、如何验证、是否影响其他验收项。</p>
+<h2 id="96-空白模板返工单"><a class="header" href="#96-空白模板返工单">9.6 空白模板：返工单</a></h2>
+<pre><code class="language-text"># 返工单：{问题标题}
+
+## 1. 关联信息
+
+关联切片：
+关联验收项：
+问题类型：产品返工 / 实现返工 / 越界实现 / 待确认
+优先级：高 / 中 / 低
+
+## 2. 问题描述
+
+一句话描述：
+
+## 3. 复现步骤
+
+前置条件：
+操作步骤：
+1.
+2.
+3.
+
+## 4. 当前结果
+
+{实际发生了什么}
+
+## 5. 期望结果
+
+{应该发生什么}
+
+## 6. 修改范围
+
+允许修改：
+1.
+2.
+3.
+
+## 7. 不允许改动
+
+不要修改：
+1.
+2.
+3.
+
+## 8. 复验清单
+
+修复后请复验：
+1.
+2.
+3.
+
+## 9. 完成后请汇报
+
+1. 修改了哪些文件。
+2. 如何验证问题已修复。
+3. 是否影响其他验收项。
+4. 是否存在已知问题。
+</code></pre>
+<h2 id="97-主案例返工单示例一空输入仍可生成草案"><a class="header" href="#97-主案例返工单示例一空输入仍可生成草案">9.7 主案例返工单示例一：空输入仍可生成草案</a></h2>
+<pre><code class="language-text"># 返工单：修复空输入仍可生成草案的问题
+
+## 1. 关联信息
+
+关联切片：任务创建 → 草案确认 → 入列表
+关联验收项：验收项 4：空输入不能生成草案
+问题类型：实现返工
+优先级：高
+
+## 2. 问题描述
+
+任务输入框为空时，用户仍然可以点击“生成草案”，系统会生成一个空草案。
+
+## 3. 复现步骤
+
+前置条件：打开任务创建页。
+操作步骤：
+1. 保持任务输入框为空。
+2. 点击“生成草案”按钮。
+3. 查看草案区域和任务列表。
+
+## 4. 当前结果
+
+系统生成了一个标题为空或内容为空的草案。
+
+## 5. 期望结果
+
+空输入时不应生成草案。可以采用以下任一方式：
+1. “生成草案”按钮置为禁用状态；或
+2. 点击后提示“请输入任务描述”。
+
+推荐优先使用按钮禁用，同时保留输入校验提示。
+
+## 6. 修改范围
+
+允许修改：
+1. 任务输入框校验逻辑。
+2. 生成草案按钮禁用状态。
+3. 空输入提示文案。
+
+## 7. 不允许改动
+
+不要修改：
+1. 草案字段结构。
+2. 任务列表样式。
+3. 任务状态文案。
+4. 路由结构。
+5. 不要新增审批、执行、权限等功能。
+
+## 8. 复验清单
+
+修复后请复验：
+1. 空输入时不能生成草案。
+2. 输入有效任务后仍能生成草案。
+3. 生成草案后仍能确认创建。
+
+## 9. 完成后请汇报
+
+1. 修改了哪些文件。
+2. 如何验证空输入已被拦截。
+3. 是否影响正常任务创建流程。
+</code></pre>
+<h2 id="98-主案例返工单示例二移除越界员工配置入口"><a class="header" href="#98-主案例返工单示例二移除越界员工配置入口">9.8 主案例返工单示例二：移除越界员工配置入口</a></h2>
+<pre><code class="language-text"># 返工单：移除第一切片中的员工配置入口
+
+## 1. 关联信息
+
+关联切片：任务创建 → 草案确认 → 入列表
+关联验收项：验收项 8：页面不出现本切片之外的功能
+问题类型：越界实现
+优先级：中
+
+## 2. 问题描述
+
+当前页面出现了“员工配置”入口，但第一切片明确不做员工配置功能。
+
+## 3. 复现步骤
+
+前置条件：打开任务创建页或任务列表页。
+操作步骤：
+1. 查看页面顶部导航和侧边栏。
+2. 查找是否存在“员工配置”入口。
+
+## 4. 当前结果
+
+页面显示“员工配置”入口，点击后可能进入未完成页面。
+
+## 5. 期望结果
+
+第一切片页面不显示员工配置入口。员工配置功能放入后续切片，不在当前页面暴露。
+
+## 6. 修改范围
+
+允许修改：
+1. 当前页面导航配置。
+2. 当前切片相关入口显示逻辑。
+
+## 7. 不允许改动
+
+不要修改：
+1. 任务创建主流程。
+2. 草案生成逻辑。
+3. 任务列表状态逻辑。
+4. 不要实现员工配置功能。
+
+## 8. 复验清单
+
+1. 页面不再显示员工配置入口。
+2. 任务创建流程仍可正常完成。
+3. 任务列表仍显示待执行状态。
+</code></pre>
+<h2 id="99-产品返工示例确认按钮位置不明显"><a class="header" href="#99-产品返工示例确认按钮位置不明显">9.9 产品返工示例：确认按钮位置不明显</a></h2>
+<p>产品返工要先补产品定义，再改实现。</p>
+<pre><code class="language-text"># 产品返工确认：草案确认按钮位置
+
+## 问题
+
+生成草案后，确认创建按钮位置不明显，用户可能不知道下一步操作。
+
+## 当前定义缺口
+
+原页面预览只写了“确认创建按钮”，没有定义按钮位置、样式和出现时机。
+
+## 新产品规则
+
+1. 草案生成后，在草案卡片右下角显示“确认创建任务”主按钮。
+2. 按钮在草案未生成前不显示。
+3. 草案字段为空时按钮禁用。
+4. 点击后任务进入列表，并清空草案区域。
+
+## 转成实现返工
+
+请按照上述新产品规则调整确认创建按钮。不要改动任务列表、草案字段结构和页面路由。
+</code></pre>
+<p>这个例子说明：产品返工不应该直接丢给 coding agent 猜。先把产品规则补清楚，再变成实现返工。</p>
+<h2 id="910-产品返工-vs-实现返工判断表"><a class="header" href="#910-产品返工-vs-实现返工判断表">9.10 产品返工 vs 实现返工判断表</a></h2>
+<pre><code class="language-text">| 现象 | 判断 | 原因 |
+|---|---|---|
+| 合同写了空输入不能提交，但实际可以提交 | 实现返工 | 已定义但没做到 |
+| 页面按钮位置不明显，原文档没定义位置 | 产品返工 | 需要补交互规则 |
+| 系统多了本版不做的员工配置页 | 越界实现 | 违反不做边界 |
+| 风险等级字段到底要不要显示不确定 | 待确认 | 需要业务决策 |
+| 状态文案与施工单不一致 | 实现返工 | 期望已明确 |
+| 用户路径走不通，因为原流程设计不合理 | 产品返工 | 需要重新定义流程 |
+</code></pre>
+<h2 id="911-bug-复现记录模板"><a class="header" href="#911-bug-复现记录模板">9.11 bug 复现记录模板</a></h2>
+<pre><code class="language-text">问题标题：
+发现日期：
+发现版本：
+关联验收项：
+
+前置条件：
+复现步骤：
+1.
+2.
+3.
+
+当前结果：
+期望结果：
+发生频率：每次 / 偶发 / 不确定
+影响范围：
+截图或录屏：
+初步判断：产品返工 / 实现返工 / 越界实现 / 待确认
+</code></pre>
+<h2 id="912-返工后复验清单"><a class="header" href="#912-返工后复验清单">9.12 返工后复验清单</a></h2>
+<pre><code class="language-text">返工单标题：
+返工完成日期：
+复验人：
+
+需要复验的原验收项：
+1.
+2.
+3.
+
+新增复验项：
+1. 修复点是否生效。
+2. 是否影响正常流程。
+3. 是否引入本切片之外功能。
+4. 是否改动无关页面。
+
+复验结论：通过 / 未通过 / 需要二次返工
+二次问题：
+</code></pre>
+<h2 id="913-让-gpt-判断返工类型的提示词"><a class="header" href="#913-让-gpt-判断返工类型的提示词">9.13 让 GPT 判断返工类型的提示词</a></h2>
+<pre><code class="language-text">请帮我判断下面的问题属于产品返工、实现返工、越界实现还是待确认。
+
+判断规则：
+1. 如果原产品合同/施工单/验收清单已经写清，但实现没做到，属于实现返工。
+2. 如果原定义不清，需要重新决定交互、文案、流程或规则，属于产品返工。
+3. 如果出现了本版明确不做的功能，属于越界实现。
+4. 如果需要业务方进一步确认，属于待确认。
+
+请输出：分类、理由、建议返工单写法。
+
+问题描述：
+{贴上问题}
+
+相关材料：
+{贴上产品合同/施工单/验收项}
+</code></pre>
+<h2 id="914-让-gpt-写返工单的提示词"><a class="header" href="#914-让-gpt-写返工单的提示词">9.14 让 GPT 写返工单的提示词</a></h2>
+<pre><code class="language-text">请基于下面的验收失败项，帮我写一份 coding agent 可以执行的返工单。
+
+要求：
+1. 必须包含关联验收项、复现步骤、当前结果、期望结果、修改范围、不允许改动、复验清单。
+2. 不要新增功能。
+3. 不要扩大到当前切片之外。
+4. 如果问题属于产品定义不清，请先标记为产品返工，并列出需要我确认的问题，不要直接写实现任务。
+
+验收失败项：
+{贴上失败项}
+
+当前切片边界：
+{贴上做/不做边界}
+</code></pre>
+<h2 id="915-练习扩写与参考答案"><a class="header" href="#915-练习扩写与参考答案">9.15 练习扩写与参考答案</a></h2>
+<h3 id="练习-1判断产品返工还是实现返工"><a class="header" href="#练习-1判断产品返工还是实现返工">练习 1：判断产品返工还是实现返工</a></h3>
+<pre><code class="language-text">A. 空输入仍然可以提交。
+B. 确认按钮位置不明显，但原文档未定义。
+C. 状态显示为“处理中”，但验收标准要求“待执行”。
+D. 页面新增了权限配置功能。
+E. 风险等级是否要显示，团队还没决定。
+</code></pre>
+<p>参考答案：</p>
+<pre><code class="language-text">A：实现返工。
+B：产品返工。
+C：实现返工。
+D：越界实现。
+E：待确认。
+</code></pre>
+<h3 id="练习-2把模糊反馈改成返工单"><a class="header" href="#练习-2把模糊反馈改成返工单">练习 2：把模糊反馈改成返工单</a></h3>
+<p>模糊反馈：</p>
+<pre><code class="language-text">这个页面怪怪的。
+</code></pre>
+<p>参考改写：</p>
+<pre><code class="language-text">问题：草案生成后，用户不知道下一步应该点击哪里。
+复现步骤：输入任务并生成草案，查看草案区域。
+当前结果：确认创建按钮位于页面底部，不在草案卡片附近。
+期望结果：确认创建按钮显示在草案卡片右下角，并使用主按钮样式。
+修改范围：只调整确认按钮位置和样式。
+不允许改动：不要修改草案字段、列表状态和页面路由。
+</code></pre>
+<h3 id="练习-3写复现步骤"><a class="header" href="#练习-3写复现步骤">练习 3：写复现步骤</a></h3>
+<p>问题：确认后任务没有进入列表。</p>
+<p>参考答案：</p>
+<pre><code class="language-text">前置条件：任务创建页已打开。
+操作步骤：
+1. 输入“整理客户开发情况”。
+2. 点击“生成草案”。
+3. 等待草案出现。
+4. 点击“确认创建”。
+5. 查看任务列表。
+当前结果：列表没有新增任务。
+期望结果：列表新增一条任务，状态为待执行。
+</code></pre>
+<h3 id="练习-4写期望结果"><a class="header" href="#练习-4写期望结果">练习 4：写期望结果</a></h3>
+<p>当前结果：任务进入列表后状态显示为“处理中”。</p>
+<p>参考答案：</p>
+<pre><code class="language-text">期望结果：任务进入列表后的初始状态应显示为“待执行”，因为本切片不做真实执行，不能显示“处理中”。
+</code></pre>
+<h3 id="练习-5限定返工范围-1"><a class="header" href="#练习-5限定返工范围-1">练习 5：限定返工范围</a></h3>
+<p>返工需求：修复空输入仍可提交。</p>
+<p>参考限定：</p>
+<pre><code class="language-text">允许修改：输入校验、按钮禁用状态、提示文案。
+不允许修改：草案字段、任务列表布局、任务状态文案、路由、审批相关功能。
+</code></pre>
+<h3 id="练习-6主案例返工单"><a class="header" href="#练习-6主案例返工单">练习 6：主案例返工单</a></h3>
+<p>参考答案可使用 9.7 或 9.8 的返工单。</p>
+<h3 id="练习-7自己的项目返工单"><a class="header" href="#练习-7自己的项目返工单">练习 7：自己的项目返工单</a></h3>
+<p>示范：外贸报价工具。</p>
+<pre><code class="language-text">问题：空询盘时仍可生成报价草案。
+复现步骤：打开报价页，保持询盘输入框为空，点击生成报价。
+当前结果：系统生成空报价草案。
+期望结果：按钮禁用或提示请输入询盘内容。
+修改范围：询盘输入校验、生成按钮状态、提示文案。
+不允许改动：报价字段结构、报价列表、客户管理、邮件发送。
+复验项：空询盘不能生成；有效询盘仍可生成；确认后仍能保存报价。
+</code></pre>
+<h2 id="916-读者常见卡点"><a class="header" href="#916-读者常见卡点">9.16 读者常见卡点</a></h2>
+<h3 id="卡点-1总想让-ai-整体优化"><a class="header" href="#卡点-1总想让-ai-整体优化">卡点 1：总想让 AI “整体优化”</a></h3>
+<p>整体优化通常会引入新问题。返工阶段要克制，只修已发现问题。</p>
+<h3 id="卡点-2不会写期望结果"><a class="header" href="#卡点-2不会写期望结果">卡点 2：不会写期望结果</a></h3>
+<p>期望结果来自三个地方：产品合同、施工单、验收清单。如果三者都没写，那就是产品返工，需要先补定义。</p>
+<h3 id="卡点-3返工后忘记复验"><a class="header" href="#卡点-3返工后忘记复验">卡点 3：返工后忘记复验</a></h3>
+<p>返工后不复验，就不知道修复是否真的生效，也不知道有没有引入新问题。</p>
+<h3 id="卡点-4让-coding-agent-决定产品规则"><a class="header" href="#卡点-4让-coding-agent-决定产品规则">卡点 4：让 coding agent 决定产品规则</a></h3>
+<p>不要把“按钮放哪里”“状态叫什么”“风险等级怎么分”这类问题完全丢给 coding agent。它可以建议，但最终要你确认。</p>
+<h2 id="917-本章结束后的实际产出物"><a class="header" href="#917-本章结束后的实际产出物">9.17 本章结束后的实际产出物</a></h2>
+<p>完成本章后，你应该有：</p>
+<pre><code class="language-text">01_主案例返工单.md
+02_产品返工确认单.md
+03_实现返工单.md
+04_越界实现清理单.md
+05_返工后复验清单.md
+06_自己项目返工单.md
+</code></pre>
+<p>这些产出物会进入第 10 章，沉淀为你的个人 AI 协同开发工作流。</p>
+<h2 id="918-本章小结补强"><a class="header" href="#918-本章小结补强">9.18 本章小结补强</a></h2>
+<p>返工能力决定了你能不能真正把 AI 开发拉回正轨。</p>
+<p>记住一句话：</p>
+<pre><code class="language-text">不要把“不好用”丢给 AI，要把它翻译成复现步骤、当前结果、期望结果和修改边界。
+</code></pre>
+<p>当你能稳定写返工单时，你就不再害怕 AI 第一次做不对。因为你已经掌握了把偏差一点点修回来的方法。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="08_验收清单.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="10_个人AI协同开发工作流.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="08_验收清单.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="10_个人AI协同开发工作流.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

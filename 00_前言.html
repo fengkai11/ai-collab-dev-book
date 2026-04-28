@@ -1,0 +1,279 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>前言：为什么你需要一套 AI 时代的新手开发方法 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="前言为什么你需要一套-ai-时代的新手开发方法"><a class="header" href="#前言为什么你需要一套-ai-时代的新手开发方法">前言：为什么你需要一套 AI 时代的新手开发方法</a></h1>
+<blockquote>
+<p>版本：v0.1 全章初稿</p>
+</blockquote>
+<h2 id="这本书写给谁"><a class="header" href="#这本书写给谁">这本书写给谁</a></h2>
+<p>这本书写给没有系统软件开发基础，但希望借助 GPT、Claude Code、Codex、Cursor 等 AI 工具把产品做出来的新手。你可能有业务想法，能描述需求，也能判断页面像不像自己要的东西，但不一定懂前端、后端、数据库、接口和部署。</p>
+<p>本书不追求把你培养成专业程序员，而是训练一种更现实的能力：把模糊想法拆成 AI 能稳定执行的小切片，并通过页面预览、施工任务单、验收清单和返工单，把开发过程控制住。</p>
+<h2 id="本书的核心路线"><a class="header" href="#本书的核心路线">本书的核心路线</a></h2>
+<pre><code class="language-text">产品合同 → 页面预览 → 最小闭环 → 切片任务 → 施工单 → 验收 → 返工 → 复盘
+</code></pre>
+<p>这条路线的重点不是“慢”，而是“可控”。AI 写代码越来越快，但写得快不代表做得准。人仍然要负责目标、边界和验收。</p>
+<h2 id="为什么不能一上来做完整系统"><a class="header" href="#为什么不能一上来做完整系统">为什么不能一上来做完整系统</a></h2>
+<p>很多人第一次用 AI 做项目，会这样问：</p>
+<pre><code class="language-text">我要做一个 AI 员工系统，请帮我生成完整 PRD、架构设计、数据库设计、前端页面、后端接口和开发计划。
+</code></pre>
+<p>AI 很可能给你一大堆内容：员工画像、任务系统、长期记忆、工具权限、审批流、日志、复盘、知识库、多 agent 调度。它们看起来都合理，但问题是你很难判断第一步要做什么，也很难审查这些内容是否真正服务于你的目标。</p>
+<p>新手最缺的通常不是更多文档，而是过程控制力。你需要知道什么时候让 AI 收敛，什么时候让 AI 展开，什么时候停止生成，什么时候进入验收。</p>
+<h2 id="本书主案例"><a class="header" href="#本书主案例">本书主案例</a></h2>
+<p>本书贯穿一个主案例：AI 员工任务创建与审批小闭环。</p>
+<p>完整想法是：</p>
+<pre><code class="language-text">我想做一个 AI 员工系统，可以给它分配任务，它能自己执行，还能在高风险操作前请求审批。
+</code></pre>
+<p>但本书不会从完整系统开始，而会从最小任务闭环开始：</p>
+<pre><code class="language-text">用户输入任务 → 系统生成任务草案 → 用户编辑/确认 → 任务进入列表。
+</code></pre>
+<p>后续再接审批、执行结果、复盘等切片。</p>
+<h2 id="你读完后应该能做到什么"><a class="header" href="#你读完后应该能做到什么">你读完后应该能做到什么</a></h2>
+<ol>
+<li>把一句模糊需求压缩成一页纸产品合同；</li>
+<li>识别系统里的最小闭环；</li>
+<li>拆出第一个可开发、可验收的切片；</li>
+<li>要求 GPT 先做页面预览，而不是直接展开后端；</li>
+<li>给 Claude Code / Codex 写清楚施工任务单；</li>
+<li>用验收清单检查 AI 产出；</li>
+<li>判断问题属于产品返工还是实现返工；</li>
+<li>写出可执行返工单；</li>
+<li>通过复盘减少下一轮偏航；</li>
+<li>建立自己的 AI 协同开发工作流。</li>
+</ol>
+<h2 id="本章练习"><a class="header" href="#本章练习">本章练习</a></h2>
+<h3 id="练习-1写下你的项目想法"><a class="header" href="#练习-1写下你的项目想法">练习 1：写下你的项目想法</a></h3>
+<p>用 100 字以内写下你最想用 AI 做的一个产品想法。不要写功能清单，只写“谁，用它解决什么问题”。</p>
+<h3 id="练习-2列出-5-个容易膨胀的功能"><a class="header" href="#练习-2列出-5-个容易膨胀的功能">练习 2：列出 5 个容易膨胀的功能</a></h3>
+<p>围绕你的项目想法，列出 5 个你很想做、但第一版可能不该做的功能。</p>
+<h2 id="我的项目想法记录卡"><a class="header" href="#我的项目想法记录卡">我的项目想法记录卡</a></h2>
+<pre><code class="language-text">项目名称：
+一句话想法：
+目标用户：
+用户现在遇到的问题：
+我希望用户完成的第一个动作：
+用户完成后应该看到的结果：
+最容易膨胀的功能：
+本书练习中，我准备用它作为个人案例：
+</code></pre>
+<h2 id="小结"><a class="header" href="#小结">小结</a></h2>
+<p>AI 时代，新手真正要掌握的不是“让 AI 多写”，而是“让 AI 在正确范围内写”。从下一章开始，我们先分析为什么很多人用 AI 开发，最后做出来却不好用。</p>
+<h2 id="读者使用本书的方式"><a class="header" href="#读者使用本书的方式">读者使用本书的方式</a></h2>
+<p>建议你不要把这本书当成一次性读完的理论书，而是当成训练手册。每读一章，就拿自己的一个真实项目做一遍练习。哪怕这个项目很小，比如一个报价草案工具、一个外贸客户列表工具、一个学习打卡工具，也比只读概念更有效。</p>
+<p>你可以准备一个文件夹，命名为：</p>
+<pre><code class="language-text">my-ai-dev-training/
+</code></pre>
+<p>然后每章输出一个文件：</p>
+<pre><code class="language-text">00-idea.md
+01-contract.md
+02-page-preview.md
+03-first-slice.md
+04-construction-order.md
+05-acceptance.md
+06-rework.md
+07-review.md
+</code></pre>
+<p>不要担心一开始写得不专业。本书训练的目标不是第一次就写出完美文档，而是让你形成“每一步都有可检查产物”的习惯。</p>
+<h2 id="本书最重要的底层判断"><a class="header" href="#本书最重要的底层判断">本书最重要的底层判断</a></h2>
+<p>AI 时代，开发能力被重新拆分了。过去写代码是门槛，现在“定义问题、拆分切片、控制边界、验收结果”变成更关键的门槛。AI 可以帮你写代码，但它不能替你决定第一版应该解决什么问题，也不能替你承担“做出来是否有用”的判断责任。</p>
+<p>所以本书反复强调一句话：</p>
+<blockquote>
+<p>AI 负责生成，人负责判断；AI 负责执行，人负责验收；AI 可以扩展，人必须收敛。</p>
+</blockquote>
+<p>如果你能记住这句话，后面每一章都会更容易理解。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="01_为什么很多人用AI开发最后做出来却不好用.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="01_为什么很多人用AI开发最后做出来却不好用.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

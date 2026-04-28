@@ -1,0 +1,751 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 8 章：如何用验收清单做非程序员也能执行的验收 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-8-章如何用验收清单做非程序员也能执行的验收"><a class="header" href="#第-8-章如何用验收清单做非程序员也能执行的验收">第 8 章：如何用验收清单做非程序员也能执行的验收</a></h1>
+<blockquote>
+<p>版本：v0.2 核心训练扩写版<br />
+本章定位：核心训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要学会不用看懂全部代码，也能通过验收清单检查 AI 开发结果。验收不是感觉一下，而是逐条测试。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>验收清单：可执行检查项。</li>
+<li>正常流程：用户按预期操作。</li>
+<li>异常流程：输入错误、生成失败、重复点击等。</li>
+<li>边界情况：空输入、长输入、刷新、多次创建。</li>
+<li>页面验收：结构、按钮、文案。</li>
+<li>状态验收：待执行、生成中、失败等状态。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>非程序员也能验收产品结果。</li>
+<li>验收清单应在施工前准备。</li>
+<li>验收覆盖正常、异常和边界。</li>
+<li>每条要能标记通过/未通过/不确定。</li>
+<li>验收结果应直接转成返工单。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>对第一切片验收：空输入是否禁用，输入后能否生成草案，草案是否可编辑，确认后是否进入列表，状态是否为待执行，是否出现越界功能。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">我打开页面看了看，感觉还可以，按钮能点，页面没报错。
+</code></pre>
+<p>这不是验收，因为没有覆盖异常、边界和状态。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">验收项：空输入时生成按钮应禁用。
+操作：打开页面，不输入内容。
+当前结果：按钮仍可点击。
+期望结果：按钮禁用。
+结论：未通过。
+</code></pre>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-从成功标准转验收项"><a class="header" href="#1-从成功标准转验收项">1. 从成功标准转验收项</a></h3>
+<p>把“空输入不能提交”改成具体操作和期望结果。</p>
+<h3 id="2-覆盖正常流程"><a class="header" href="#2-覆盖正常流程">2. 覆盖正常流程</a></h3>
+<p>输入任务、生成草案、编辑、确认、列表显示。</p>
+<h3 id="3-覆盖异常流程"><a class="header" href="#3-覆盖异常流程">3. 覆盖异常流程</a></h3>
+<p>生成失败、空输入、重复点击、草案为空。</p>
+<h3 id="4-覆盖边界情况"><a class="header" href="#4-覆盖边界情况">4. 覆盖边界情况</a></h3>
+<p>长输入、连续创建、刷新页面、越界功能。</p>
+<h3 id="5-记录结论"><a class="header" href="#5-记录结论">5. 记录结论</a></h3>
+<p>通过、未通过、不确定、本版不要求。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请基于第一切片定义生成手工验收清单，分正常流程、异常流程、边界情况、越界检查。每条包含操作步骤和期望结果，不写自动化测试代码。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="验收清单模板"><a class="header" href="#验收清单模板">验收清单模板</a></h3>
+<p>用于逐条测试。</p>
+<pre><code class="language-text">项目/切片：
+验收日期：
+
+正常流程：
+|编号|操作步骤|期望结果|结果|备注|
+
+异常流程：
+|编号|操作步骤|期望结果|结果|备注|
+
+边界情况：
+|编号|操作步骤|期望结果|结果|备注|
+</code></pre>
+<h3 id="问题记录模板"><a class="header" href="#问题记录模板">问题记录模板</a></h3>
+<p>用于把失败项变成问题。</p>
+<pre><code class="language-text">问题标题：
+关联验收项：
+复现步骤：
+当前结果：
+期望结果：
+问题类型：
+建议处理：
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1把成功标准改成验收项"><a class="header" href="#练习-1把成功标准改成验收项">练习 1：把成功标准改成验收项。</a></h3>
+<h3 id="练习-2补全任务创建页异常流程"><a class="header" href="#练习-2补全任务创建页异常流程">练习 2：补全任务创建页异常流程。</a></h3>
+<h3 id="练习-3写主案例验收清单"><a class="header" href="#练习-3写主案例验收清单">练习 3：写主案例验收清单。</a></h3>
+<h3 id="练习-4判断验收项是否可执行"><a class="header" href="#练习-4判断验收项是否可执行">练习 4：判断验收项是否可执行。</a></h3>
+<h3 id="练习-5模拟一次验收失败记录"><a class="header" href="#练习-5模拟一次验收失败记录">练习 5：模拟一次验收失败记录。</a></h3>
+<h3 id="练习-6从验收结果提炼问题"><a class="header" href="#练习-6从验收结果提炼问题">练习 6：从验收结果提炼问题。</a></h3>
+<h3 id="练习-7为自己的项目写验收清单"><a class="header" href="#练习-7为自己的项目写验收清单">练习 7：为自己的项目写验收清单。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>草案可编辑：生成草案后修改标题，确认后列表显示修改后的标题。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>异常：空输入、生成失败、重复点击、草案标题为空、输入过短。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>至少包含正常8条、异常4条、边界3条。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>体验好、智能、稳定不可执行；空输入禁用、确认后入列表可执行。</p>
+<h3 id="练习-5-参考"><a class="header" href="#练习-5-参考">练习 5 参考</a></h3>
+<p>空输入仍可提交：当前结果按钮可点，期望禁用，结论未通过。</p>
+<h3 id="练习-6-参考"><a class="header" href="#练习-6-参考">练习 6 参考</a></h3>
+<p>失败项按标题、复现、当前、期望、类型整理。</p>
+<h3 id="练习-7-参考"><a class="header" href="#练习-7-参考">练习 7 参考</a></h3>
+<p>自己的项目也要覆盖正常、异常、边界。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+验收覆盖正常流程。</li>
+<li><input disabled="" type="checkbox"/>
+覆盖异常流程。</li>
+<li><input disabled="" type="checkbox"/>
+覆盖边界情况。</li>
+<li><input disabled="" type="checkbox"/>
+每条有操作和期望。</li>
+<li><input disabled="" type="checkbox"/>
+能标记结果。</li>
+<li><input disabled="" type="checkbox"/>
+能转成返工单。</li>
+<li><input disabled="" type="checkbox"/>
+检查越界功能。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区验收就是随便点点"><a class="header" href="#误区验收就是随便点点">误区：验收就是随便点点</a></h3>
+<p>验收必须有清单和记录。</p>
+<h3 id="误区只测正常流程"><a class="header" href="#误区只测正常流程">误区：只测正常流程</a></h3>
+<p>异常和边界更容易暴露问题。</p>
+<h3 id="误区发现问题只说不好用"><a class="header" href="#误区发现问题只说不好用">误区：发现问题只说不好用</a></h3>
+<p>不好用要转成复现步骤和期望结果。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>验收清单让非程序员也能控制 AI 开发结果。你不必先看懂全部代码，但必须能检查用户可见行为。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章把验收失败项转成返工单。</p>
+<h2 id="验收清单应在施工前写"><a class="header" href="#验收清单应在施工前写">验收清单应在施工前写</a></h2>
+<p>很多人等代码做完才想怎么验收，这会导致验收标准被结果反向影响。更稳的做法是在施工前写验收清单，并把它放进施工任务单里。这样 coding agent 施工时就知道完成标准。</p>
+<p>流程应该是：</p>
+<pre><code class="language-text">切片定义 → 验收清单 → 施工任务单 → 实现 → 按清单验收
+</code></pre>
+<p>而不是：</p>
+<pre><code class="language-text">实现 → 看看效果 → 临时想怎么验收
+</code></pre>
+<h2 id="验收项的好坏对比"><a class="header" href="#验收项的好坏对比">验收项的好坏对比</a></h2>
+<p>差的验收项：</p>
+<pre><code class="language-text">页面要好用。
+</code></pre>
+<p>好的验收项：</p>
+<pre><code class="language-text">打开页面后，不输入任何内容，“生成任务草案”按钮应禁用。
+</code></pre>
+<p>差的验收项：</p>
+<pre><code class="language-text">AI 生成合理草案。
+</code></pre>
+<p>好的验收项：</p>
+<pre><code class="language-text">输入“帮我整理本周客户跟进情况”后，草案至少包含标题、目标、交付物、风险等级四个字段。
+</code></pre>
+<p>差的验收项：</p>
+<pre><code class="language-text">列表正常显示。
+</code></pre>
+<p>好的验收项：</p>
+<pre><code class="language-text">点击确认创建后，任务列表新增一行，显示任务标题、创建时间、风险等级和状态“待执行”。
+</code></pre>
+<h2 id="主案例完整验收清单扩展"><a class="header" href="#主案例完整验收清单扩展">主案例完整验收清单扩展</a></h2>
+<h3 id="正常流程"><a class="header" href="#正常流程">正常流程</a></h3>
+<ol>
+<li>打开页面，应看到页面标题“创建 AI 员工任务”。</li>
+<li>输入框为空时，生成按钮禁用。</li>
+<li>输入任务描述后，生成按钮可点击。</li>
+<li>点击生成后，按钮进入 loading 状态。</li>
+<li>生成成功后，出现草案确认区。</li>
+<li>草案包含标题、目标、交付物、风险等级。</li>
+<li>用户可以编辑草案标题。</li>
+<li>用户可以编辑交付物描述。</li>
+<li>点击确认创建后，出现成功提示。</li>
+<li>任务列表新增任务，状态为“待执行”。</li>
+</ol>
+<h3 id="异常流程"><a class="header" href="#异常流程">异常流程</a></h3>
+<ol>
+<li>空输入不能生成草案。</li>
+<li>生成失败时显示错误提示。</li>
+<li>生成失败后保留用户输入。</li>
+<li>生成中重复点击不会创建重复草案。</li>
+<li>草案标题为空时不能确认创建。</li>
+</ol>
+<h3 id="边界情况"><a class="header" href="#边界情况">边界情况</a></h3>
+<ol>
+<li>输入 500 字长任务描述，页面不崩溃。</li>
+<li>连续创建 3 条任务，列表显示 3 条。</li>
+<li>任务列表为空时有引导文案。</li>
+<li>页面刷新后如果数据不保留，应在产品合同中标明本版不要求持久化。</li>
+<li>页面不出现员工配置、权限、审批等越界功能。</li>
+</ol>
+<h2 id="验收结果如何记录"><a class="header" href="#验收结果如何记录">验收结果如何记录</a></h2>
+<p>建议用这样的记录：</p>
+<pre><code class="language-text">验收项编号：A-02
+操作：打开页面，不输入内容。
+期望：生成按钮禁用。
+实际：按钮可点击。
+结论：未通过。
+问题类型：实现问题。
+复现稳定性：每次必现。
+</code></pre>
+<p>这条记录可以直接变成返工单。</p>
+<h2 id="让-gpt-整理验收结果"><a class="header" href="#让-gpt-整理验收结果">让 GPT 整理验收结果</a></h2>
+<pre><code class="language-text">下面是我的验收记录。请把未通过项整理成问题清单。
+每个问题包含：标题、复现步骤、当前结果、期望结果、问题类型、建议返工范围。
+不要新增需求。
+</code></pre>
+<hr />
+<h1 id="v02-核心训练扩写让非程序员也能验收-ai-写出来的东西"><a class="header" href="#v02-核心训练扩写让非程序员也能验收-ai-写出来的东西">v0.2 核心训练扩写：让非程序员也能验收 AI 写出来的东西</a></h1>
+<blockquote>
+<p>本节扩写第 8 章。目标是把“看着差不多”变成“按清单逐条验收”。</p>
+</blockquote>
+<h2 id="81-验收不是感觉而是证据"><a class="header" href="#81-验收不是感觉而是证据">8.1 验收不是感觉，而是证据</a></h2>
+<p>很多新手用 AI 写完代码后，会打开页面点几下，然后说：</p>
+<pre><code class="language-text">感觉还行。
+</code></pre>
+<p>或者：</p>
+<pre><code class="language-text">好像哪里不对，但说不上来。
+</code></pre>
+<p>这就是没有验收清单的问题。</p>
+<p>验收不是让你变成程序员，也不是要求你读懂所有代码。验收的核心是：把产品结果拆成一条条可以手工检查的证据。</p>
+<p>你只需要回答：</p>
+<ol>
+<li>我做了什么操作？</li>
+<li>页面应该出现什么结果？</li>
+<li>实际出现了什么结果？</li>
+<li>这一项通过、失败还是不确定？</li>
+<li>如果失败，如何复现？</li>
+</ol>
+<p>这 5 个问题足够让你对 AI 产出形成控制。</p>
+<h2 id="82-验收清单应该在施工前准备"><a class="header" href="#82-验收清单应该在施工前准备">8.2 验收清单应该在施工前准备</a></h2>
+<p>很多人等 coding agent 做完以后才想怎么验收，这会导致一个问题：你会被最终页面牵着走。</p>
+<p>正确做法是：在施工前就把验收清单写好。这样施工单和验收清单会互相约束。</p>
+<p>施工前写验收清单有三个好处：</p>
+<ol>
+<li>你能提前发现切片定义不清。</li>
+<li>coding agent 知道完成标准。</li>
+<li>返工时有明确依据。</li>
+</ol>
+<p>主案例中，如果施工前就写了：</p>
+<pre><code class="language-text">空输入时不能生成草案。
+</code></pre>
+<p>那么 coding agent 做完后，你只要测试这一项。如果它没做到，就不是“感觉不好”，而是明确失败项。</p>
+<h2 id="83-一条好验收项的-4-个字段"><a class="header" href="#83-一条好验收项的-4-个字段">8.3 一条好验收项的 4 个字段</a></h2>
+<p>一条验收项建议包含：</p>
+<pre><code class="language-text">前置条件：测试前页面处于什么状态。
+操作步骤：用户具体怎么操作。
+期望结果：页面应该发生什么。
+通过标准：满足什么才算通过。
+</code></pre>
+<p>例如：</p>
+<pre><code class="language-text">验收项：空输入不能生成草案
+前置条件：任务创建页已打开，任务输入框为空。
+操作步骤：点击“生成草案”按钮。
+期望结果：系统不生成草案，并提示用户先输入任务描述，或按钮处于禁用状态。
+通过标准：空输入不会进入草案生成流程，也不会新增任务。
+</code></pre>
+<p>这就比“空输入要处理好”清楚得多。</p>
+<h2 id="84-主案例验收清单任务创建第一切片"><a class="header" href="#84-主案例验收清单任务创建第一切片">8.4 主案例验收清单：任务创建第一切片</a></h2>
+<h3 id="正常流程验收"><a class="header" href="#正常流程验收">正常流程验收</a></h3>
+<pre><code class="language-text">验收项 1：输入任务后能生成草案
+前置条件：任务创建页已打开。
+操作步骤：在输入框输入“帮我整理本周客户开发情况”，点击“生成草案”。
+期望结果：页面出现加载态，随后展示任务草案卡片。
+通过标准：草案卡片包含任务标题、任务目标、预期产出、风险等级。
+</code></pre>
+<pre><code class="language-text">验收项 2：草案字段可以编辑
+前置条件：草案卡片已生成。
+操作步骤：修改草案标题或预期产出字段。
+期望结果：字段内容可以被用户修改。
+通过标准：修改后的内容能保留在草案卡片中。
+</code></pre>
+<pre><code class="language-text">验收项 3：确认后任务进入列表
+前置条件：草案卡片已生成。
+操作步骤：点击“确认创建”。
+期望结果：任务出现在任务列表中。
+通过标准：列表中显示修改后的任务标题，状态为“待执行”。
+</code></pre>
+<h3 id="异常流程验收"><a class="header" href="#异常流程验收">异常流程验收</a></h3>
+<pre><code class="language-text">验收项 4：空输入不能生成草案
+前置条件：任务输入框为空。
+操作步骤：点击“生成草案”。
+期望结果：按钮禁用，或页面提示“请输入任务描述”。
+通过标准：不会出现草案卡片，也不会新增任务。
+</code></pre>
+<pre><code class="language-text">验收项 5：草案生成失败时有提示
+前置条件：系统模拟草案生成失败。
+操作步骤：输入任务并点击“生成草案”。
+期望结果：页面显示失败提示。
+通过标准：用户能看到“草案生成失败，请重试”之类的明确提示，且可以再次尝试。
+</code></pre>
+<h3 id="边界情况验收"><a class="header" href="#边界情况验收">边界情况验收</a></h3>
+<pre><code class="language-text">验收项 6：重复点击不会创建多个草案
+前置条件：输入框已有任务描述。
+操作步骤：快速多次点击“生成草案”。
+期望结果：生成过程中按钮禁用或只触发一次生成。
+通过标准：不会出现多个重复草案。
+</code></pre>
+<pre><code class="language-text">验收项 7：确认创建后不会重复入列表
+前置条件：草案卡片已生成。
+操作步骤：快速多次点击“确认创建”。
+期望结果：只创建一条任务。
+通过标准：任务列表中不会出现重复任务。
+</code></pre>
+<h3 id="越界功能验收"><a class="header" href="#越界功能验收">越界功能验收</a></h3>
+<pre><code class="language-text">验收项 8：页面不出现本切片之外的功能
+前置条件：打开任务创建页和任务列表页。
+操作步骤：查看页面全部按钮、入口、菜单。
+期望结果：不出现审批、真实执行、员工配置、权限、长期记忆等功能入口。
+通过标准：页面只包含任务创建、草案确认和任务列表相关内容。
+</code></pre>
+<h2 id="85-三组错误验收-vs-正确验收"><a class="header" href="#85-三组错误验收-vs-正确验收">8.5 三组错误验收 vs 正确验收</a></h2>
+<h3 id="组-1只说感觉"><a class="header" href="#组-1只说感觉">组 1：只说感觉</a></h3>
+<p>错误验收：</p>
+<pre><code class="language-text">页面还可以，就是感觉不太顺。
+</code></pre>
+<p>正确验收：</p>
+<pre><code class="language-text">失败项：确认创建按钮位置不明显。
+复现步骤：生成草案后查看草案卡片底部，没有明显主按钮。
+期望结果：确认创建按钮应位于草案卡片右下角，并使用主按钮样式。
+</code></pre>
+<h3 id="组-2没有复现步骤"><a class="header" href="#组-2没有复现步骤">组 2：没有复现步骤</a></h3>
+<p>错误验收：</p>
+<pre><code class="language-text">空输入有问题。
+</code></pre>
+<p>正确验收：</p>
+<pre><code class="language-text">前置条件：任务输入框为空。
+操作步骤：点击“生成草案”。
+当前结果：系统生成了一个空草案。
+期望结果：按钮禁用或提示请输入任务描述，不应生成草案。
+</code></pre>
+<h3 id="组-3把产品问题和实现问题混在一起"><a class="header" href="#组-3把产品问题和实现问题混在一起">组 3：把产品问题和实现问题混在一起</a></h3>
+<p>错误验收：</p>
+<pre><code class="language-text">状态不对，页面也不好看，整体重做。
+</code></pre>
+<p>正确验收：</p>
+<pre><code class="language-text">问题 1：确认后列表状态显示为“处理中”，但产品合同要求为“待执行”。这是实现偏差。
+问题 2：确认按钮位置是否应该调整，产品合同未定义，需要产品返工确认。
+</code></pre>
+<h2 id="86-字段解释验收清单模板"><a class="header" href="#86-字段解释验收清单模板">8.6 字段解释：验收清单模板</a></h2>
+<h3 id="验收项编号"><a class="header" href="#验收项编号">验收项编号</a></h3>
+<p>方便返工时引用。例如“修复验收项 4”。</p>
+<h3 id="验收目标"><a class="header" href="#验收目标">验收目标</a></h3>
+<p>一句话说明检查什么。</p>
+<h3 id="前置条件"><a class="header" href="#前置条件">前置条件</a></h3>
+<p>避免测试环境不一致。</p>
+<h3 id="操作步骤"><a class="header" href="#操作步骤">操作步骤</a></h3>
+<p>越具体越好，最好按 1、2、3 写。</p>
+<h3 id="期望结果"><a class="header" href="#期望结果">期望结果</a></h3>
+<p>写产品应该怎样。</p>
+<h3 id="实际结果"><a class="header" href="#实际结果">实际结果</a></h3>
+<p>测试时填写。</p>
+<h3 id="结论"><a class="header" href="#结论">结论</a></h3>
+<p>通过 / 未通过 / 不确定。</p>
+<h3 id="问题类型"><a class="header" href="#问题类型">问题类型</a></h3>
+<p>初步判断是产品问题、实现问题还是待确认问题。</p>
+<h2 id="87-空白模板验收清单"><a class="header" href="#87-空白模板验收清单">8.7 空白模板：验收清单</a></h2>
+<pre><code class="language-text"># 验收清单：{切片名称}
+
+当前切片：
+验收人：
+验收日期：
+版本 / 分支：
+
+## 验收项 1：{验收目标}
+
+前置条件：
+操作步骤：
+1.
+2.
+3.
+期望结果：
+实际结果：
+结论：通过 / 未通过 / 不确定
+问题类型：产品问题 / 实现问题 / 待确认
+备注：
+
+## 验收项 2：{验收目标}
+
+前置条件：
+操作步骤：
+1.
+2.
+3.
+期望结果：
+实际结果：
+结论：通过 / 未通过 / 不确定
+问题类型：产品问题 / 实现问题 / 待确认
+备注：
+</code></pre>
+<h2 id="88-手工测试记录表"><a class="header" href="#88-手工测试记录表">8.8 手工测试记录表</a></h2>
+<pre><code class="language-text">测试日期：
+测试版本：
+测试人：
+测试范围：
+
+| 编号 | 验收项 | 结果 | 实际表现 | 截图/备注 | 是否进入返工 |
+|---|---|---|---|---|---|
+| 1 | 输入任务后能生成草案 | 通过/失败/不确定 |  |  | 是/否 |
+| 2 | 草案字段可编辑 | 通过/失败/不确定 |  |  | 是/否 |
+| 3 | 确认后进入列表 | 通过/失败/不确定 |  |  | 是/否 |
+| 4 | 空输入不能提交 | 通过/失败/不确定 |  |  | 是/否 |
+| 5 | 不出现越界功能 | 通过/失败/不确定 |  |  | 是/否 |
+</code></pre>
+<h2 id="89-问题记录模板"><a class="header" href="#89-问题记录模板">8.9 问题记录模板</a></h2>
+<pre><code class="language-text">问题编号：
+关联验收项：
+问题标题：
+问题类型：产品问题 / 实现问题 / 待确认
+严重程度：高 / 中 / 低
+
+前置条件：
+复现步骤：
+1.
+2.
+3.
+
+当前结果：
+期望结果：
+影响范围：
+建议处理方式：
+是否需要返工：是 / 否
+</code></pre>
+<h2 id="810-让-gpt-生成验收清单的提示词"><a class="header" href="#810-让-gpt-生成验收清单的提示词">8.10 让 GPT 生成验收清单的提示词</a></h2>
+<pre><code class="language-text">请基于下面的第一切片和施工任务单，生成非程序员也能执行的手工验收清单。
+
+要求：
+1. 每条验收项必须包含前置条件、操作步骤、期望结果、通过标准。
+2. 覆盖正常流程、异常流程、边界情况和越界功能检查。
+3. 不要写自动化测试代码。
+4. 不要扩展当前切片之外的功能。
+5. 如果某个规则不确定，请放入待确认项。
+
+第一切片：
+{贴上切片定义}
+
+施工任务单：
+{贴上施工任务单}
+</code></pre>
+<h2 id="811-验收结果如何转成返工输入"><a class="header" href="#811-验收结果如何转成返工输入">8.11 验收结果如何转成返工输入</a></h2>
+<p>验收不是结束，验收失败项会进入第 9 章的返工单。</p>
+<p>转换方法如下：</p>
+<div class="table-wrapper"><table><thead><tr><th>验收失败项</th><th>返工单字段</th></tr></thead><tbody>
+<tr><td>验收项编号</td><td>关联验收项</td></tr>
+<tr><td>操作步骤</td><td>复现步骤</td></tr>
+<tr><td>实际结果</td><td>当前结果</td></tr>
+<tr><td>期望结果</td><td>期望结果</td></tr>
+<tr><td>问题类型</td><td>产品返工 / 实现返工</td></tr>
+<tr><td>严重程度</td><td>优先级</td></tr>
+</tbody></table>
+</div>
+<p>示例：</p>
+<p>验收失败项：</p>
+<pre><code class="language-text">验收项 4：空输入不能生成草案。
+实际结果：空输入时仍然生成了草案。
+</code></pre>
+<p>转成返工输入：</p>
+<pre><code class="language-text">问题：空输入时仍可生成草案。
+复现步骤：打开任务创建页，保持输入框为空，点击生成草案。
+当前结果：出现空草案。
+期望结果：按钮禁用或提示请输入任务描述，不生成草案。
+问题类型：实现返工。
+</code></pre>
+<h2 id="812-练习扩写与参考答案"><a class="header" href="#812-练习扩写与参考答案">8.12 练习扩写与参考答案</a></h2>
+<h3 id="练习-1把成功标准转成验收项"><a class="header" href="#练习-1把成功标准转成验收项">练习 1：把成功标准转成验收项</a></h3>
+<p>成功标准：</p>
+<pre><code class="language-text">草案可编辑。
+</code></pre>
+<p>参考验收项：</p>
+<pre><code class="language-text">前置条件：任务草案已生成。
+操作步骤：点击任务标题字段，修改标题内容。
+期望结果：标题字段可以编辑并保留修改后的内容。
+通过标准：确认创建后，列表中显示修改后的标题。
+</code></pre>
+<h3 id="练习-2补全异常流程"><a class="header" href="#练习-2补全异常流程">练习 2：补全异常流程</a></h3>
+<p>正常流程：输入任务 → 生成草案 → 确认创建。</p>
+<p>参考异常流程：</p>
+<pre><code class="language-text">1. 空输入时点击生成草案。
+2. 草案生成失败。
+3. 生成过程中重复点击按钮。
+4. 草案为空时点击确认创建。
+5. 确认创建失败。
+</code></pre>
+<h3 id="练习-3写主案例验收清单-1"><a class="header" href="#练习-3写主案例验收清单-1">练习 3：写主案例验收清单</a></h3>
+<p>参考答案可使用 8.4 的验收项 1–8。</p>
+<h3 id="练习-4判断验收项是否可执行-1"><a class="header" href="#练习-4判断验收项是否可执行-1">练习 4：判断验收项是否可执行</a></h3>
+<p>验收项：</p>
+<pre><code class="language-text">A. 系统要足够智能。
+B. 空输入时不能提交。
+C. 页面体验要好。
+D. 确认后任务状态显示为待执行。
+</code></pre>
+<p>参考答案：</p>
+<pre><code class="language-text">可执行：B、D。
+不可执行：A、C。
+</code></pre>
+<p>原因：A 和 C 都是主观表达，没有操作步骤和通过标准。</p>
+<h3 id="练习-5模拟验收结果"><a class="header" href="#练习-5模拟验收结果">练习 5：模拟验收结果</a></h3>
+<p>测试结果：空输入时仍然生成草案。</p>
+<p>参考记录：</p>
+<pre><code class="language-text">验收项：空输入不能生成草案
+结果：未通过
+实际表现：输入框为空时点击生成草案，系统生成了标题为空的草案。
+是否进入返工：是
+问题类型：实现问题
+</code></pre>
+<h3 id="练习-6从验收结果提炼问题-1"><a class="header" href="#练习-6从验收结果提炼问题-1">练习 6：从验收结果提炼问题</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">问题标题：空输入时仍可生成草案。
+复现步骤：打开页面，保持输入框为空，点击生成草案。
+当前结果：生成空草案。
+期望结果：按钮禁用或提示请输入任务描述。
+</code></pre>
+<h3 id="练习-7为自己的项目写验收清单-1"><a class="header" href="#练习-7为自己的项目写验收清单-1">练习 7：为自己的项目写验收清单</a></h3>
+<p>示范：外贸报价草案切片。</p>
+<pre><code class="language-text">验收项 1：空询盘不能生成报价。
+验收项 2：输入询盘后能生成报价草案。
+验收项 3：报价字段可编辑。
+验收项 4：确认后报价进入记录列表。
+验收项 5：不出现邮件发送、ERP 对接等越界功能。
+</code></pre>
+<h2 id="813-读者常见卡点"><a class="header" href="#813-读者常见卡点">8.13 读者常见卡点</a></h2>
+<h3 id="卡点-1不会判断问题类型"><a class="header" href="#卡点-1不会判断问题类型">卡点 1：不会判断问题类型</a></h3>
+<p>先不用追求完全准确。你可以初步判断：</p>
+<ul>
+<li>合同写了但没做到，多半是实现问题。</li>
+<li>合同没写清，导致不知道对不对，多半是产品问题或待确认。</li>
+<li>出现本版不做的功能，是越界实现。</li>
+</ul>
+<h3 id="卡点-2不想写复现步骤"><a class="header" href="#卡点-2不想写复现步骤">卡点 2：不想写复现步骤</a></h3>
+<p>没有复现步骤，coding agent 很难稳定修复。复现步骤越清楚，返工越可控。</p>
+<h3 id="卡点-3觉得验收太慢"><a class="header" href="#卡点-3觉得验收太慢">卡点 3：觉得验收太慢</a></h3>
+<p>验收慢一次，返工会快很多。没有验收清单，你可能会反复说“还是不对”，但每次都说不清哪里不对。</p>
+<h3 id="卡点-4页面好看但流程不对"><a class="header" href="#卡点-4页面好看但流程不对">卡点 4：页面好看但流程不对</a></h3>
+<p>不要被视觉骗了。第一切片优先验收流程、状态、边界，再验收美观。</p>
+<h2 id="814-本章结束后的实际产出物"><a class="header" href="#814-本章结束后的实际产出物">8.14 本章结束后的实际产出物</a></h2>
+<p>完成本章后，你应该有：</p>
+<pre><code class="language-text">01_主案例第一切片验收清单.md
+02_自己项目第一切片验收清单.md
+03_手工测试记录表.md
+04_问题记录表.md
+05_进入返工的问题清单.md
+</code></pre>
+<p>这些材料会进入第 9 章，变成返工单。</p>
+<h2 id="815-本章小结补强"><a class="header" href="#815-本章小结补强">8.15 本章小结补强</a></h2>
+<p>验收清单让你即使不懂代码，也能掌握 AI 开发结果。</p>
+<p>记住一句话：</p>
+<pre><code class="language-text">看不懂代码没关系，但你必须看得懂结果，并能逐条说清哪里通过、哪里失败。
+</code></pre>
+<p>从这一章开始，你不再只是“让 AI 做”，而是开始真正管理 AI 的交付质量。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="07_ClaudeCode_Codex施工任务单.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="09_返工单.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="07_ClaudeCode_Codex施工任务单.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="09_返工单.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

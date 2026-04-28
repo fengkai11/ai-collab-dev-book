@@ -1,0 +1,822 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 6 章：如何给 GPT 下达切片任务，让它不发散 - AI 协同开发：切片式开发训练手册</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">AI 协同开发：切片式开发训练手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="第-6-章如何给-gpt-下达切片任务让它不发散"><a class="header" href="#第-6-章如何给-gpt-下达切片任务让它不发散">第 6 章：如何给 GPT 下达切片任务，让它不发散</a></h1>
+<blockquote>
+<p>版本：v0.2 核心训练扩写版<br />
+本章定位：核心训练章节</p>
+</blockquote>
+<h2 id="本章你要学会什么"><a class="header" href="#本章你要学会什么">本章你要学会什么</a></h2>
+<p>你要学会把 GPT 从自由发挥模式拉回切片协作模式。好提示词的核心不是更长，而是边界更清楚。</p>
+<h2 id="为什么这一章重要"><a class="header" href="#为什么这一章重要">为什么这一章重要</a></h2>
+<p>AI 协同开发最容易失败的地方，往往不是模型不会写代码，而是人没有把目标、边界、检查点和验收方式定义清楚。本章的作用，是把一个容易凭感觉推进的环节，变成可以重复执行的训练动作。你不需要一开始掌握传统软件工程的全部知识，但你必须能把 AI 的输出限制在自己能审查、能判断、能返工的范围内。</p>
+<h2 id="核心概念"><a class="header" href="#核心概念">核心概念</a></h2>
+<ul>
+<li>输出边界：本轮输出什么、不输出什么。</li>
+<li>禁止展开：防止 GPT 写后端、数据库、权限等内容。</li>
+<li>待确认项：不确定内容不脑补。</li>
+<li>单轮目标：每次只让 GPT 完成一种任务。</li>
+<li>验收导向：把描述改成可检查表达。</li>
+</ul>
+<h2 id="核心观点"><a class="header" href="#核心观点">核心观点</a></h2>
+<ol>
+<li>GPT 默认倾向补全和扩展，必须显式限制。</li>
+<li>好提示词不是更长，而是规定本轮只做什么。</li>
+<li>每轮只完成一种任务。</li>
+<li>让 GPT 列待确认项，比让它默默脑补更安全。</li>
+<li>要把感觉不对改成明确约束。</li>
+</ol>
+<h2 id="主案例推进"><a class="header" href="#主案例推进">主案例推进</a></h2>
+<p>围绕第一切片，与 GPT 的对话应分轮：审查产品合同、输出页面预览、收紧切片边界、生成施工单、生成验收清单。每轮只做一件事。</p>
+<h2 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h2>
+<pre><code class="language-text">基于这个 AI 员工系统，请帮我生成完整开发文档。
+继续深入。
+帮我优化一下。
+</code></pre>
+<p>这些都容易发散，因为没有边界、没有输出格式、没有禁止展开。</p>
+<h2 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h2>
+<pre><code class="language-text">请只围绕“任务创建 → 草案确认 → 任务进入列表”这个第一切片工作。
+不要展开审批、执行、记忆、工具调用、权限。
+本轮只输出页面预览、切片边界、待确认项。
+</code></pre>
+<h2 id="方法拆解"><a class="header" href="#方法拆解">方法拆解</a></h2>
+<h3 id="1-写背景"><a class="header" href="#1-写背景">1. 写背景</a></h3>
+<p>一句话说明项目和当前切片。</p>
+<h3 id="2-写本轮目标"><a class="header" href="#2-写本轮目标">2. 写本轮目标</a></h3>
+<p>例如本轮只输出页面预览。</p>
+<h3 id="3-写禁止范围"><a class="header" href="#3-写禁止范围">3. 写禁止范围</a></h3>
+<p>列出不做审批、执行、记忆、权限等。</p>
+<h3 id="4-写输出格式"><a class="header" href="#4-写输出格式">4. 写输出格式</a></h3>
+<p>规定标题和字段，减少自由发挥。</p>
+<h3 id="5-要求待确认项"><a class="header" href="#5-要求待确认项">5. 要求待确认项</a></h3>
+<p>所有不确定内容放待确认项。</p>
+<h3 id="6-要求可验收"><a class="header" href="#6-要求可验收">6. 要求可验收</a></h3>
+<p>所有标准都改成能手工检查。</p>
+<h2 id="和-gpt-的对话演示"><a class="header" href="#和-gpt-的对话演示">和 GPT 的对话演示</a></h2>
+<pre><code class="language-text">请基于下面产品合同，只输出第一切片页面预览。
+禁止：后端、数据库、接口、审批、执行、长期记忆、权限。
+输出：页面列表、区块、按钮、状态、待确认项。
+</code></pre>
+<h2 id="本章模板"><a class="header" href="#本章模板">本章模板</a></h2>
+<h3 id="切片任务提示词模板"><a class="header" href="#切片任务提示词模板">切片任务提示词模板</a></h3>
+<p>用于控制 GPT 围绕当前切片工作。</p>
+<pre><code class="language-text">项目背景：
+当前切片：
+本轮目标：
+禁止展开：
+输出格式：
+质量要求：不确定放待确认项，所有标准可验收。
+</code></pre>
+<h3 id="限制-gpt-发散提示词"><a class="header" href="#限制-gpt-发散提示词">限制 GPT 发散提示词</a></h3>
+<p>当 GPT 已经开始扩展时使用。</p>
+<pre><code class="language-text">请停止扩展完整系统。
+现在只围绕以下切片工作：
+禁止展开：
+如果重要但不属于本轮，请放到后续切片建议，不写详细方案。
+</code></pre>
+<h2 id="练习题"><a class="header" href="#练习题">练习题</a></h2>
+<h3 id="练习-1识别哪些提示词容易发散"><a class="header" href="#练习-1识别哪些提示词容易发散">练习 1：识别哪些提示词容易发散。</a></h3>
+<h3 id="练习-2把大而全提示词改成切片提示词"><a class="header" href="#练习-2把大而全提示词改成切片提示词">练习 2：把大而全提示词改成切片提示词。</a></h3>
+<h3 id="练习-3为第一切片写禁止展开提示词"><a class="header" href="#练习-3为第一切片写禁止展开提示词">练习 3：为第一切片写禁止展开提示词。</a></h3>
+<h3 id="练习-4写要求待确认项的提示词"><a class="header" href="#练习-4写要求待确认项的提示词">练习 4：写要求待确认项的提示词。</a></h3>
+<h3 id="练习-5写页面预览提示词"><a class="header" href="#练习-5写页面预览提示词">练习 5：写页面预览提示词。</a></h3>
+<h3 id="练习-6写验收清单提示词"><a class="header" href="#练习-6写验收清单提示词">练习 6：写验收清单提示词。</a></h3>
+<h3 id="练习-7设计三轮对话合同预览边界"><a class="header" href="#练习-7设计三轮对话合同预览边界">练习 7：设计三轮对话：合同→预览→边界。</a></h3>
+<h3 id="练习-8标出-gpt-输出中的越界内容"><a class="header" href="#练习-8标出-gpt-输出中的越界内容">练习 8：标出 GPT 输出中的越界内容。</a></h3>
+<h2 id="参考答案--示范解法"><a class="header" href="#参考答案--示范解法">参考答案 / 示范解法</a></h2>
+<h3 id="练习-1-参考"><a class="header" href="#练习-1-参考">练习 1 参考</a></h3>
+<p>“完整设计”“继续深入”“帮我优化”容易发散。</p>
+<h3 id="练习-2-参考"><a class="header" href="#练习-2-参考">练习 2 参考</a></h3>
+<p>改成：只做第一切片，输出目标、边界、验收，不展开后续。</p>
+<h3 id="练习-3-参考"><a class="header" href="#练习-3-参考">练习 3 参考</a></h3>
+<p>禁止展开审批、执行、工具、记忆、权限、数据库持久化。</p>
+<h3 id="练习-4-参考"><a class="header" href="#练习-4-参考">练习 4 参考</a></h3>
+<p>凡是不确定的任务类型、风险规则、附件支持，都放待确认项。</p>
+<h3 id="练习-5-参考"><a class="header" href="#练习-5-参考">练习 5 参考</a></h3>
+<p>页面预览提示词必须限制不写代码。</p>
+<h3 id="练习-6-参考"><a class="header" href="#练习-6-参考">练习 6 参考</a></h3>
+<p>验收提示词必须要求操作步骤和期望结果。</p>
+<h3 id="练习-7-参考"><a class="header" href="#练习-7-参考">练习 7 参考</a></h3>
+<p>第1轮合同、第2轮页面预览、第3轮切片边界。</p>
+<h3 id="练习-8-参考"><a class="header" href="#练习-8-参考">练习 8 参考</a></h3>
+<p>员工配置、权限管理、真实执行面板都属于越界。</p>
+<h2 id="自查清单"><a class="header" href="#自查清单">自查清单</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+提示词写了当前切片。</li>
+<li><input disabled="" type="checkbox"/>
+写了本轮目标。</li>
+<li><input disabled="" type="checkbox"/>
+写了禁止展开。</li>
+<li><input disabled="" type="checkbox"/>
+要求待确认项。</li>
+<li><input disabled="" type="checkbox"/>
+规定输出格式。</li>
+<li><input disabled="" type="checkbox"/>
+要求可验收。</li>
+</ul>
+<h2 id="常见误区"><a class="header" href="#常见误区">常见误区</a></h2>
+<h3 id="误区提示词越长越好"><a class="header" href="#误区提示词越长越好">误区：提示词越长越好</a></h3>
+<p>长但没边界仍会发散。</p>
+<h3 id="误区让-gpt-一轮做所有事"><a class="header" href="#误区让-gpt-一轮做所有事">误区：让 GPT 一轮做所有事</a></h3>
+<p>每轮只做一种任务。</p>
+<h3 id="误区不让-gpt-暴露不确定性"><a class="header" href="#误区不让-gpt-暴露不确定性">误区：不让 GPT 暴露不确定性</a></h3>
+<p>待确认项是防脑补机制。</p>
+<h2 id="本章小结"><a class="header" href="#本章小结">本章小结</a></h2>
+<p>GPT 很会扩展。你要用当前切片、本轮目标、禁止范围、输出格式和待确认项，把它限制在可控范围内。</p>
+<h2 id="下一章如何接上"><a class="header" href="#下一章如何接上">下一章如何接上</a></h2>
+<p>下一章把切片转成 Claude Code / Codex 可执行的施工任务单。</p>
+<h2 id="提示词的刹车系统"><a class="header" href="#提示词的刹车系统">提示词的“刹车系统”</a></h2>
+<p>给 GPT 的提示词里，要有刹车。刹车不是一句“不要发散”就够了，而是具体写清楚什么叫发散。</p>
+<p>例如：</p>
+<pre><code class="language-text">以下内容视为发散：
+1. 写数据库设计；
+2. 写后端接口；
+3. 设计权限系统；
+4. 加入员工配置；
+5. 讨论部署；
+6. 设计长期记忆。
+</code></pre>
+<p>这样 GPT 才知道边界在哪里。</p>
+<h2 id="三种常用收敛句式"><a class="header" href="#三种常用收敛句式">三种常用收敛句式</a></h2>
+<h3 id="句式-1只做当前层"><a class="header" href="#句式-1只做当前层">句式 1：只做当前层</a></h3>
+<pre><code class="language-text">本轮只做页面预览，不写代码、不写接口、不写数据库。
+</code></pre>
+<h3 id="句式-2只做当前切片"><a class="header" href="#句式-2只做当前切片">句式 2：只做当前切片</a></h3>
+<pre><code class="language-text">本轮只围绕任务创建与草案确认，不展开审批、执行、记忆、权限。
+</code></pre>
+<h3 id="句式-3不确定就问"><a class="header" href="#句式-3不确定就问">句式 3：不确定就问</a></h3>
+<pre><code class="language-text">无法从材料中确定的内容，请放入待确认项，不要替我做默认决定。
+</code></pre>
+<p>这三句话可以组合使用。</p>
+<h2 id="继续之前先指定方向"><a class="header" href="#继续之前先指定方向">“继续”之前先指定方向</a></h2>
+<p>新手常说“继续”，但 GPT 不知道继续哪里。你要把“继续”改成下面几种：</p>
+<pre><code class="language-text">继续扩写验收清单，不要写实现。
+继续补充异常流程，不要改正常流程。
+继续审查越界功能，不要重写方案。
+继续把成功标准改成可验收表达。
+继续把页面预览收敛成施工单。
+</code></pre>
+<p>这样 GPT 的输出会稳定很多。</p>
+<h2 id="主案例连续三轮完整示范"><a class="header" href="#主案例连续三轮完整示范">主案例连续三轮完整示范</a></h2>
+<h3 id="第-1-轮生成产品合同"><a class="header" href="#第-1-轮生成产品合同">第 1 轮：生成产品合同</a></h3>
+<pre><code class="language-text">我想做 AI 员工任务系统。请不要写完整 PRD。
+请只生成一页纸产品合同，字段包括目标用户、核心问题、本版闭环、成功标准、本版不做、待确认项。
+本版只考虑任务创建与草案确认。
+</code></pre>
+<h3 id="第-2-轮页面预览"><a class="header" href="#第-2-轮页面预览">第 2 轮：页面预览</a></h3>
+<pre><code class="language-text">基于上面的产品合同，请只输出页面预览。
+禁止写后端、数据库、接口、权限、审批、执行。
+页面预览要包含区块、按钮、点击结果、空状态、加载态、错误态。
+</code></pre>
+<h3 id="第-3-轮收敛施工边界"><a class="header" href="#第-3-轮收敛施工边界">第 3 轮：收敛施工边界</a></h3>
+<pre><code class="language-text">基于页面预览，请输出第一切片边界。
+只写本切片做什么、不做什么、哪些可以 mock、验收标准。
+不要写代码。
+</code></pre>
+<p>这三轮的顺序非常重要。不要跳过前两轮直接施工。</p>
+<h2 id="gpt-输出越界时的修正话术"><a class="header" href="#gpt-输出越界时的修正话术">GPT 输出越界时的修正话术</a></h2>
+<pre><code class="language-text">你刚才的输出中包含了本切片不做的内容，例如【列出】。
+请重新输出，只保留任务创建与草案确认闭环。
+把审批、执行、权限、记忆放到“后续切片”，不要展开。
+</code></pre>
+<p>注意不要直接说“你错了，重写”。要明确指出哪里越界、如何处理。</p>
+<h2 id="提示词质量自评"><a class="header" href="#提示词质量自评">提示词质量自评</a></h2>
+<p>每次发送提示词前，快速检查：</p>
+<pre><code class="language-text">[ ] 我写了当前切片吗？
+[ ] 我写了本轮只做什么吗？
+[ ] 我写了禁止展开吗？
+[ ] 我写了输出格式吗？
+[ ] 我要求不确定内容放待确认项了吗？
+[ ] 我要求可验收了吗？
+</code></pre>
+<h2 id="如果少了两项以上先不要发给-gpt"><a class="header" href="#如果少了两项以上先不要发给-gpt">如果少了两项以上，先不要发给 GPT。</a></h2>
+<h1 id="v02-核心训练扩写让-gpt-围绕当前切片工作"><a class="header" href="#v02-核心训练扩写让-gpt-围绕当前切片工作">v0.2 核心训练扩写：让 GPT 围绕当前切片工作</a></h1>
+<blockquote>
+<p>本节扩写第 6 章。目标是把“会提问”变成“会控制输出边界”。</p>
+</blockquote>
+<h2 id="61-你不是在问-gpt而是在给它划施工边界"><a class="header" href="#61-你不是在问-gpt而是在给它划施工边界">6.1 你不是在问 GPT，而是在给它划施工边界</a></h2>
+<p>很多新手把 GPT 当成一个“懂很多的顾问”。遇到一个想法，就问：</p>
+<pre><code class="language-text">你觉得这个系统应该怎么做？
+</code></pre>
+<p>GPT 会回答，而且通常回答得很完整。但完整不等于适合当前阶段。</p>
+<p>在 AI 协同开发里，你更应该把 GPT 当成一个非常能干、但容易主动扩展的协作者。它会补全你没说的内容，会替你做很多假设，会把一个小需求扩成一个完整系统。</p>
+<p>所以，你给 GPT 的任务不能只写“我要什么”，还要写：</p>
+<ol>
+<li>本轮只做什么。</li>
+<li>本轮不要做什么。</li>
+<li>输出格式是什么。</li>
+<li>哪些内容必须放入待确认项。</li>
+<li>哪些内容不能自行决定。</li>
+</ol>
+<p>这不是为了限制 GPT 的能力，而是为了让它的能力服务于你当前的切片。</p>
+<h2 id="62-切片任务提示词的基本结构"><a class="header" href="#62-切片任务提示词的基本结构">6.2 切片任务提示词的基本结构</a></h2>
+<p>一个稳定的切片任务提示词，建议包含 7 个部分。</p>
+<pre><code class="language-text">1. 角色：你希望 GPT 以什么身份工作。
+2. 背景：项目是什么，当前阶段是什么。
+3. 当前切片：本轮只围绕哪条链路。
+4. 明确禁止：哪些内容不要展开。
+5. 输出目标：本轮要产出什么。
+6. 输出格式：按什么结构输出。
+7. 待确认项：不确定时不要脑补，列出来。
+</code></pre>
+<p>主案例示范：</p>
+<pre><code class="language-text">你是一名 AI 协同开发教练，擅长帮助新手把模糊需求压缩成可施工切片。
+
+项目背景：我在做一个 AI 员工任务系统。完整系统未来可能包含任务创建、审批、执行、记忆、工具权限和复盘。
+
+当前切片：只围绕“用户输入任务 → 系统生成可编辑草案 → 用户确认 → 任务进入列表”工作。
+
+明确禁止：不要展开真实 agent 执行、工具调用、多员工调度、长期记忆、复杂权限、数据库设计和部署方案。
+
+输出目标：请帮我输出当前切片的页面预览、切片边界和待确认项。
+
+输出格式：
+1. 页面范围
+2. 用户路径
+3. 页面状态
+4. 本切片做什么
+5. 本切片不做什么
+6. 待确认项
+
+要求：所有你不确定的地方都放入待确认项，不要自行决定。
+</code></pre>
+<p>这个提示词看起来比一句话长，但它能显著降低 GPT 发散的概率。</p>
+<h2 id="63-禁止展开不是客气话要写具体"><a class="header" href="#63-禁止展开不是客气话要写具体">6.3 “禁止展开”不是客气话，要写具体</a></h2>
+<p>很多人会在提示词里写：</p>
+<pre><code class="language-text">不要太复杂。
+</code></pre>
+<p>这句话几乎没用。因为“复杂”是主观词。GPT 不知道你认为哪些内容复杂。</p>
+<p>更好的写法是列出具体禁止项：</p>
+<pre><code class="language-text">不要展开以下内容：
+1. 真实 agent 执行。
+2. 工具调用。
+3. 多员工调度。
+4. 长期记忆。
+5. 高风险审批。
+6. 权限系统。
+7. 数据库设计。
+8. 部署方案。
+</code></pre>
+<p>具体禁止项的好处是：</p>
+<ul>
+<li>GPT 更容易遵守。</li>
+<li>你更容易检查输出是否越界。</li>
+<li>后续转成施工单时，coding agent 也更不容易顺手加功能。</li>
+</ul>
+<h2 id="64-三组错误问法-vs-正确问法"><a class="header" href="#64-三组错误问法-vs-正确问法">6.4 三组错误问法 vs 正确问法</a></h2>
+<h3 id="组-1目标太大"><a class="header" href="#组-1目标太大">组 1：目标太大</a></h3>
+<p>错误问法：</p>
+<pre><code class="language-text">请帮我设计一个 AI 员工系统。
+</code></pre>
+<p>可能输出：角色系统、任务系统、工具系统、记忆系统、权限系统、日志系统、部署架构。</p>
+<p>正确问法：</p>
+<pre><code class="language-text">请不要设计完整 AI 员工系统。请只围绕第一切片“任务创建 → 草案确认 → 进入列表”工作，输出页面预览和切片边界。
+</code></pre>
+<h3 id="组-2输出物不清"><a class="header" href="#组-2输出物不清">组 2：输出物不清</a></h3>
+<p>错误问法：</p>
+<pre><code class="language-text">帮我分析一下这个功能。
+</code></pre>
+<p>问题：GPT 可能写市场分析、产品分析、技术分析、风险分析，但你当前需要的是可执行材料。</p>
+<p>正确问法：</p>
+<pre><code class="language-text">请把下面的功能改写成一页纸切片定义，字段包括：起点、终点、用户路径、做什么、不做什么、验收标准、待确认项。
+</code></pre>
+<h3 id="组-3让-gpt-默默脑补"><a class="header" href="#组-3让-gpt-默默脑补">组 3：让 GPT 默默脑补</a></h3>
+<p>错误问法：</p>
+<pre><code class="language-text">缺的地方你自己补充。
+</code></pre>
+<p>这句话非常危险。GPT 会替你决定很多关键边界。</p>
+<p>正确问法：</p>
+<pre><code class="language-text">所有不确定或需要业务决策的地方，请放入“待确认项”，不要自行补充成确定方案。
+</code></pre>
+<h2 id="65-主案例对话演示一从产品合同到页面预览"><a class="header" href="#65-主案例对话演示一从产品合同到页面预览">6.5 主案例对话演示一：从产品合同到页面预览</a></h2>
+<h3 id="用户输入给-gpt"><a class="header" href="#用户输入给-gpt">用户输入给 GPT</a></h3>
+<pre><code class="language-text">你是一名 AI 协同开发教练。下面是一页纸产品合同：
+
+功能名称：AI 员工任务创建与确认闭环
+目标用户：管理者 / 任务发起人
+本版闭环：输入任务 → 生成草案 → 人工确认 → 任务入列表
+成功标准：3 分钟内创建任务；草案可编辑；空输入不能提交；确认后能看到任务状态
+本版不做：真实执行、长期记忆、多员工调度、复杂权限
+
+请不要写后端、数据库、agent 架构。
+请只输出页面预览方案，包括：页面范围、页面区块、按钮、用户点击路径、空状态、加载态、错误态、待确认项。
+</code></pre>
+<h3 id="gpt-理想输出应该长什么样"><a class="header" href="#gpt-理想输出应该长什么样">GPT 理想输出应该长什么样</a></h3>
+<pre><code class="language-text">页面范围：
+1. 任务创建页
+2. 草案确认区
+3. 任务列表区
+
+用户路径：
+1. 用户输入任务描述。
+2. 点击“生成草案”。
+3. 系统展示草案卡片。
+4. 用户编辑草案。
+5. 点击“确认创建”。
+6. 任务出现在列表中，状态为“待执行”。
+
+空状态：
+- 输入框为空时，“生成草案”按钮禁用。
+- 列表为空时展示：暂无任务，请先创建一个任务。
+
+加载态：
+- 点击生成草案后，按钮显示“生成中”。
+- 草案区域显示加载提示。
+
+错误态：
+- 生成失败时提示：草案生成失败，请重试。
+- 确认失败时提示：任务创建失败，请重试。
+
+待确认项：
+1. 草案字段是否包括风险等级？
+2. 任务列表是否与创建页同页展示？
+3. 第一版是否要求刷新后保留数据？
+</code></pre>
+<h3 id="你要检查什么"><a class="header" href="#你要检查什么">你要检查什么</a></h3>
+<p>你要检查 GPT 有没有越界。</p>
+<p>如果输出里出现下面内容，就说明它跑远了：</p>
+<pre><code class="language-text">数据库表结构
+API 路由设计
+多 agent 调度流程
+权限模型
+部署架构
+</code></pre>
+<p>这不是说这些永远不需要，而是它们不属于本轮页面预览。</p>
+<h2 id="66-主案例对话演示二从页面预览到施工单草稿"><a class="header" href="#66-主案例对话演示二从页面预览到施工单草稿">6.6 主案例对话演示二：从页面预览到施工单草稿</a></h2>
+<h3 id="用户输入给-gpt-1"><a class="header" href="#用户输入给-gpt-1">用户输入给 GPT</a></h3>
+<pre><code class="language-text">基于下面的页面预览，请生成第一切片施工任务单草稿。
+
+当前切片：任务创建 → 草案确认 → 入列表。
+数据策略：使用 mock 草案生成和前端本地状态。
+禁止展开：真实 agent、后端接口、数据库、审批、执行、权限、长期记忆。
+
+请输出：目标、输入材料、交付物、实现范围、不做范围、验收标准、完成后需要汇报的内容。
+</code></pre>
+<h3 id="gpt-理想输出"><a class="header" href="#gpt-理想输出">GPT 理想输出</a></h3>
+<pre><code class="language-text">施工目标：
+实现一个可交互的任务创建第一切片，用户可以输入任务、生成草案、编辑草案、确认创建，并在列表中看到任务。
+
+输入材料：
+1. 一页纸产品合同。
+2. 页面预览方案。
+3. 第一切片做/不做边界。
+
+交付物：
+1. 可运行页面。
+2. mock 草案生成逻辑。
+3. 任务列表状态展示。
+4. 运行说明。
+5. 变更文件清单。
+6. 已知问题说明。
+
+实现范围：
+1. 任务描述输入框。
+2. 生成草案按钮和加载态。
+3. 草案卡片。
+4. 草案字段编辑。
+5. 确认创建。
+6. 任务列表。
+
+不做范围：
+1. 不接真实 agent。
+2. 不接后端接口。
+3. 不做数据库持久化。
+4. 不做审批。
+5. 不做真实执行。
+6. 不做权限和记忆。
+
+验收标准：
+1. 空输入不能提交。
+2. 输入后可以生成草案。
+3. 草案可以编辑。
+4. 确认后任务进入列表。
+5. 状态显示为“待执行”。
+6. 页面不出现本切片之外的功能。
+</code></pre>
+<h2 id="67-五种高频提示词模式"><a class="header" href="#67-五种高频提示词模式">6.7 五种高频提示词模式</a></h2>
+<h3 id="模式-1压缩需求"><a class="header" href="#模式-1压缩需求">模式 1：压缩需求</a></h3>
+<pre><code class="language-text">请不要展开完整系统。请把下面的需求压缩成一个最小可验证闭环，并说明起点、终点、用户价值、做什么、不做什么。
+
+需求：{你的需求}
+</code></pre>
+<h3 id="模式-2审查是否发散"><a class="header" href="#模式-2审查是否发散">模式 2：审查是否发散</a></h3>
+<pre><code class="language-text">请检查下面的输出是否偏离当前切片。
+当前切片是：{切片定义}
+禁止展开：{禁止项列表}
+
+请标出所有越界内容，并说明应该删除、延后还是放入待确认项。
+
+输出内容：{贴上 GPT 输出}
+</code></pre>
+<h3 id="模式-3把模糊话改成可验收表达"><a class="header" href="#模式-3把模糊话改成可验收表达">模式 3：把模糊话改成可验收表达</a></h3>
+<pre><code class="language-text">请把下面这些模糊描述改写成可验收标准。每条标准必须包含操作、期望结果和通过条件。
+
+模糊描述：
+{贴上描述}
+</code></pre>
+<h3 id="模式-4要求待确认项"><a class="header" href="#模式-4要求待确认项">模式 4：要求待确认项</a></h3>
+<pre><code class="language-text">请基于下面材料工作。所有不确定、需要业务判断、可能影响范围的内容，都不要自行决定，请放入“待确认项”。
+
+材料：{贴上材料}
+</code></pre>
+<h3 id="模式-5生成施工前材料包"><a class="header" href="#模式-5生成施工前材料包">模式 5：生成施工前材料包</a></h3>
+<pre><code class="language-text">请基于当前第一切片，生成 coding agent 施工前材料包。
+只输出：切片定义、页面范围、做/不做边界、验收标准、待确认项。
+不要写代码，不要写数据库，不要写完整架构。
+</code></pre>
+<h2 id="68-字段解释切片任务提示词模板"><a class="header" href="#68-字段解释切片任务提示词模板">6.8 字段解释：切片任务提示词模板</a></h2>
+<h3 id="角色"><a class="header" href="#角色">角色</a></h3>
+<p>角色不是装饰，它会影响输出风格。你可以让 GPT 扮演：</p>
+<ul>
+<li>AI 协同开发教练</li>
+<li>产品经理</li>
+<li>施工单审查员</li>
+<li>验收清单设计者</li>
+<li>返工单整理者</li>
+</ul>
+<p>不要一次给太多角色。每轮只选一个。</p>
+<h3 id="背景"><a class="header" href="#背景">背景</a></h3>
+<p>背景要够用，但不要塞太多历史材料。只给当前切片需要的信息。</p>
+<h3 id="当前切片"><a class="header" href="#当前切片">当前切片</a></h3>
+<p>这是最重要的锚点。最好用一句话写清：</p>
+<pre><code class="language-text">当前切片：用户输入任务 → 系统生成可编辑草案 → 用户确认 → 任务进入列表。
+</code></pre>
+<h3 id="明确禁止"><a class="header" href="#明确禁止">明确禁止</a></h3>
+<p>禁止项要具体。不要写“不要复杂”，要写“不要数据库、不要审批、不要真实执行”。</p>
+<h3 id="输出目标"><a class="header" href="#输出目标">输出目标</a></h3>
+<p>告诉 GPT 这轮要产出什么，而不是让它自由发挥。</p>
+<h3 id="输出格式"><a class="header" href="#输出格式">输出格式</a></h3>
+<p>格式越明确，你越容易检查。</p>
+<h3 id="待确认项"><a class="header" href="#待确认项">待确认项</a></h3>
+<p>这能减少 GPT 脑补。</p>
+<h2 id="69-空白模板切片任务提示词"><a class="header" href="#69-空白模板切片任务提示词">6.9 空白模板：切片任务提示词</a></h2>
+<pre><code class="language-text">你是一名{角色}，请帮助我完成 AI 协同开发中的当前切片工作。
+
+项目背景：
+{项目背景}
+
+当前切片：
+{当前切片一句话定义}
+
+本轮目标：
+{本轮只要 GPT 完成什么}
+
+明确禁止展开：
+1. {禁止项1}
+2. {禁止项2}
+3. {禁止项3}
+
+请输出以下内容：
+1. {输出项1}
+2. {输出项2}
+3. {输出项3}
+
+要求：
+1. 不要扩展到当前切片之外。
+2. 所有不确定内容放入“待确认项”。
+3. 每个描述尽量写成可验收表达。
+4. 不要写代码，除非我明确要求。
+</code></pre>
+<h2 id="610-主案例填写示例切片任务提示词"><a class="header" href="#610-主案例填写示例切片任务提示词">6.10 主案例填写示例：切片任务提示词</a></h2>
+<pre><code class="language-text">你是一名 AI 协同开发教练，请帮助我把 AI 员工任务系统的第一切片整理成可施工材料。
+
+项目背景：
+我想做一个 AI 员工系统，未来可能有任务创建、审批、执行、记忆、工具权限和复盘。
+
+当前切片：
+用户输入任务描述 → 系统生成可编辑任务草案 → 用户确认 → 任务进入列表，状态为待执行。
+
+本轮目标：
+请生成第一切片的页面预览、做/不做边界、验收标准和待确认项。
+
+明确禁止展开：
+1. 不要写真实 agent 执行。
+2. 不要写工具调用。
+3. 不要写多员工调度。
+4. 不要写长期记忆。
+5. 不要写高风险审批。
+6. 不要写数据库设计。
+7. 不要写部署方案。
+
+请输出以下内容：
+1. 页面范围。
+2. 用户路径。
+3. 页面状态。
+4. 本切片做什么。
+5. 本切片不做什么。
+6. 验收标准。
+7. 待确认项。
+
+要求：
+1. 不要扩展到当前切片之外。
+2. 所有不确定内容放入“待确认项”。
+3. 每个验收标准都要能手工点击检查。
+</code></pre>
+<h2 id="611-gpt-输出越界检查表"><a class="header" href="#611-gpt-输出越界检查表">6.11 GPT 输出越界检查表</a></h2>
+<p>当你拿到 GPT 输出后，不要马上复制给 Codex。先用下面的表检查。</p>
+<pre><code class="language-text">当前切片：
+GPT 输出名称：
+检查日期：
+
+1. 是否出现当前切片之外的功能？是 / 否
+越界内容：
+处理方式：删除 / 延后 / 放入待确认项
+
+2. 是否出现未要求的技术设计？是 / 否
+越界内容：
+处理方式：删除 / 延后 / 放入待确认项
+
+3. 是否有 GPT 自行决定的业务规则？是 / 否
+具体规则：
+是否需要你确认：是 / 否
+
+4. 是否有不可验收表达？是 / 否
+模糊表达：
+改写为：
+
+5. 是否缺少做/不做边界？是 / 否
+需要补充的不做项：
+
+最终判断：可用 / 需要修改 / 不能使用
+</code></pre>
+<h2 id="612-练习扩写与参考答案"><a class="header" href="#612-练习扩写与参考答案">6.12 练习扩写与参考答案</a></h2>
+<h3 id="练习-1识别发散提示词"><a class="header" href="#练习-1识别发散提示词">练习 1：识别发散提示词</a></h3>
+<p>判断下面哪些提示词容易发散。</p>
+<pre><code class="language-text">A. 请帮我设计完整 AI 员工系统。
+B. 请只围绕任务创建第一切片输出页面状态。
+C. 请把这个功能做成完整产品方案。
+D. 请不要写架构，只输出验收清单。
+E. 缺的你帮我补全。
+</code></pre>
+<p>参考答案：</p>
+<pre><code class="language-text">容易发散：A、C、E。
+不容易发散：B、D。
+</code></pre>
+<p>解释：A 和 C 范围过大；E 允许 GPT 脑补。B 和 D 明确限制了范围和输出物。</p>
+<h3 id="练习-2改写发散提示词"><a class="header" href="#练习-2改写发散提示词">练习 2：改写发散提示词</a></h3>
+<p>原提示词：</p>
+<pre><code class="language-text">我要做一个外贸获客系统，请帮我设计完整方案。
+</code></pre>
+<p>参考改写：</p>
+<pre><code class="language-text">我想做外贸获客系统。请不要设计完整方案。请只识别第一条最小闭环：用户输入目标国家和产品 → 系统生成候选客户列表 → 用户标记是否值得跟进。请输出起点、终点、做/不做边界和验收标准。
+</code></pre>
+<h3 id="练习-3限制输出范围"><a class="header" href="#练习-3限制输出范围">练习 3：限制输出范围</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">当前只做第一切片“任务创建 → 草案确认 → 入列表”。不要展开审批、执行、员工配置、权限、记忆、数据库、部署。所有涉及这些内容的想法请放入“后续切片建议”，不要写进当前方案。
+</code></pre>
+<h3 id="练习-4要求待确认项"><a class="header" href="#练习-4要求待确认项">练习 4：要求待确认项</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">如果你发现材料中缺少业务规则，请不要自行决定。请统一放入“待确认项”，格式为：问题、为什么需要确认、如果不确认可能导致什么偏差。
+</code></pre>
+<h3 id="练习-5页面预览提示词"><a class="header" href="#练习-5页面预览提示词">练习 5：页面预览提示词</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">基于下面的一页纸产品合同，请只输出页面预览方案，不要写后端、数据库和接口。页面预览必须包括页面区块、按钮、用户点击路径、空状态、加载态、错误态和待确认项。
+</code></pre>
+<h3 id="练习-6验收清单提示词"><a class="header" href="#练习-6验收清单提示词">练习 6：验收清单提示词</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">请基于当前切片生成手工验收清单。每条验收项必须包含：前置条件、操作步骤、期望结果、通过标准。请覆盖正常流程、空输入、加载失败、重复点击和本版不应出现的越界功能。
+</code></pre>
+<h3 id="练习-7连续三轮对话设计"><a class="header" href="#练习-7连续三轮对话设计">练习 7：连续三轮对话设计</a></h3>
+<p>参考答案：</p>
+<pre><code class="language-text">第一轮：请把模糊需求压缩成最小闭环。
+第二轮：请基于最小闭环输出页面预览，不要写后端。
+第三轮：请基于页面预览输出切片边界和验收标准，不要写代码。
+</code></pre>
+<p>这三轮的关键是：每一轮只要一个输出物。</p>
+<h3 id="练习-8分析-gpt-输出是否越界"><a class="header" href="#练习-8分析-gpt-输出是否越界">练习 8：分析 GPT 输出是否越界</a></h3>
+<p>示例输出：</p>
+<pre><code class="language-text">除了任务创建页，还需要设计员工权限表、任务执行队列、工具调用日志和部署架构。
+</code></pre>
+<p>参考答案：</p>
+<pre><code class="language-text">越界内容：员工权限表、任务执行队列、工具调用日志、部署架构。
+处理方式：从当前切片删除，放入后续阶段。
+原因：当前切片只验证任务创建到入列表，不需要这些技术模块。
+</code></pre>
+<h2 id="613-读者常见卡点"><a class="header" href="#613-读者常见卡点">6.13 读者常见卡点</a></h2>
+<h3 id="卡点-1提示词写太短结果失控"><a class="header" href="#卡点-1提示词写太短结果失控">卡点 1：提示词写太短，结果失控</a></h3>
+<p>短提示词不是问题，问题是缺少边界。如果你只说“帮我设计一下”，GPT 会默认补全。</p>
+<h3 id="卡点-2提示词写很长但没有本轮目标"><a class="header" href="#卡点-2提示词写很长但没有本轮目标">卡点 2：提示词写很长，但没有本轮目标</a></h3>
+<p>有些人把很多背景都贴进去，但不说这轮要什么。GPT 仍然会发散。</p>
+<h3 id="卡点-3怕限制太多影响-gpt-发挥"><a class="header" href="#卡点-3怕限制太多影响-gpt-发挥">卡点 3：怕限制太多影响 GPT 发挥</a></h3>
+<p>早期开发不是头脑风暴，而是施工控制。你可以单独开一轮让 GPT 发散，但一旦进入切片施工，就必须收敛。</p>
+<h3 id="卡点-4把-gpt-的输出当最终答案"><a class="header" href="#卡点-4把-gpt-的输出当最终答案">卡点 4：把 GPT 的输出当最终答案</a></h3>
+<p>GPT 输出是草稿，不是命令。你要用越界检查表审查它。</p>
+<h2 id="614-本章结束后的实际产出物"><a class="header" href="#614-本章结束后的实际产出物">6.14 本章结束后的实际产出物</a></h2>
+<p>完成本章后，你应该拥有：</p>
+<pre><code class="language-text">01_第一切片GPT对话脚本.md
+02_限制发散提示词.md
+03_页面预览提示词.md
+04_施工单生成提示词草稿.md
+05_GPT输出越界检查表.md
+</code></pre>
+<p>这些材料会进入第 7 章，用来写给 Claude Code / Codex 的施工任务单。</p>
+<h2 id="615-本章小结补强"><a class="header" href="#615-本章小结补强">6.15 本章小结补强</a></h2>
+<p>GPT 很强，但它不会自动知道你当前处在哪个开发阶段。你必须告诉它：本轮只做什么，不做什么，输出什么，不确定时怎么处理。</p>
+<p>记住一句话：</p>
+<pre><code class="language-text">提示词不是许愿单，而是边界控制器。
+</code></pre>
+<p>如果你能稳定控制 GPT 的输出边界，后面给 coding agent 施工时，项目就不会轻易从小切片膨胀成大工程。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="05_最小闭环与第一切片.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="07_ClaudeCode_Codex施工任务单.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="05_最小闭环与第一切片.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="07_ClaudeCode_Codex施工任务单.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
